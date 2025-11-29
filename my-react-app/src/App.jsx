@@ -1,9 +1,8 @@
-import { BrowserRouter, Routes } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Home } from "./pages/home";
+import { NotFound } from "./pages/NotFound";
 
 function App() {
-	const [count, setCount] = useState(0);
-
 	return (
 		<BrowserRouter>
 			<Routes>
