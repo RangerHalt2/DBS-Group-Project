@@ -10,10 +10,10 @@ function App() {
 		<BrowserRouter>
 			<Routes>
 				<Route index element={<Home />} />
+				<Route path="/login" element={<Login />} />
+				<Route path="/register" element={<Register />} />
+				<Route path="/userpage" element={<UserPage />} />
 				<Route path="*" element={<NotFound />} />
-				<Route path="/login" element={< Login />} />
-				<Route path="/register" element={< Register />} />
-				<Route path="/userpage" element={< UserPage />} />
 			</Routes>
 		</BrowserRouter>
 	);
