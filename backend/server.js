@@ -188,6 +188,7 @@ app.post("/api/doner_report", async (req, res) => {
                 SUM(b.quantity * p.price) AS total_donation_value
             FROM buy b
             JOIN plate p ON b.pid = p.pid
+            JOIN doner d ON d.username = b.username
             LEFT JOIN reserve r ON p.pid = r.plate_id
             WHERE b.username = $1
             AND EXTRACT(YEAR FROM b.buy_time) = $2
@@ -199,7 +200,7 @@ app.post("/api/doner_report", async (req, res) => {
 
 		if (result.rows.length === 0) {
 			return res.status(404).json({
-				message: "No purchases found for this user/year.",
+				message: "No purchases found for this doner/year.",
 			});
 		}
 
