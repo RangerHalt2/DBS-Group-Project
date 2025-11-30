@@ -5,12 +5,14 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import UserPage from "./pages/UserPage";
 import Restaurant from "./pages/Restaurant";
+import Navbar from "./Navbar";
 
 function App() {
 	return (
 		<BrowserRouter>
+			<Navbar />
 			<Routes>
-				<Route index element={<Home />} />
+				<Route path="/" element={<Home />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/register" element={<Register />} />
 				<Route path="/user/:username" element={<UserPage />} />
