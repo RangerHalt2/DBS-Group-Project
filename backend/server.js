@@ -57,7 +57,42 @@ app.post("/api/member_lookup", async (req, res) => {
 			return res.status(404).json({ message: "Member not found" });
 		}
 
-		return res.json({ message: "Member found", member: result.rows[0] });
+		return res.json({ message: "Member found", member: result.rows });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "Server error" });
+	}
+});
+
+app.post("/api/restaurant_report", async (req, res) => {
+	const { name, year } = req.body;
+
+	try {
+		const query = `
+            SELECT 
+                p.pid AS plate_id,
+                p.description,
+                p.price,
+                SUM(p.quantity) AS total_offered,
+                COALESCE(SUM(r.quantity), 0) AS total_sold,
+                SUM(p.quantity) - COALESCE(SUM(r.quantity), 0) AS total_unsold
+            FROM sell s
+            JOIN plate p ON s.plate_id = p.pid
+            LEFT JOIN reserve r ON r.plate_id = p.pid
+            WHERE s.username = $1
+            AND EXTRACT(YEAR FROM s.start_time) = $2
+            GROUP BY p.pid, p.description, p.price
+            ORDER BY p.pid;
+        `;
+
+		const result = await pool.query(query, [name, year]);
+
+		if (result.rows.length === 0) {
+			return res
+				.status(404)
+				.json({ message: "No data found for the given restaurant and year" });
+		}
+		return res.json({ message: "Report generated", report: result.rows });
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ message: "Server error" });
