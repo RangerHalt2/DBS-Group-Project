@@ -136,6 +136,83 @@ app.post("/api/buyer_report", async (req, res) => {
 	}
 });
 
+app.post("/api/needy_report", async (req, res) => {
+	const { username, year } = req.body;
+
+	try {
+		const query = `
+            SELECT
+                p.pid AS plate_id,
+                p.description,
+                p.price,
+                SUM(r.quantity) AS total_received,
+                SUM(r.quantity * p.price) AS total_value_received
+            FROM reserve r
+            JOIN plate p ON r.plate_id = p.pid
+            WHERE r.member_username = $1
+              AND EXTRACT(YEAR FROM r.pick_up_time) = $2
+            GROUP BY p.pid, p.description, p.price
+            ORDER BY p.pid;
+        `;
+
+		const result = await pool.query(query, [username, year]);
+
+		if (result.rows.length === 0) {
+			return res.status(404).json({
+				message: "No free plates found for this user/year.",
+			});
+		}
+
+		return res.json({
+			message: "Needy report generated",
+			report: result.rows,
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "Server error" });
+	}
+});
+
+app.post("/api/doner_report", async (req, res) => {
+	const { username, year } = req.body;
+
+	try {
+		const query = `
+            SELECT 
+                p.pid,
+                p.description,
+                p.price,
+                SUM(b.quantity) AS total_donated,           -- total bought by donor
+                COALESCE(SUM(r.quantity), 0) AS given_to_needy,  -- reserved by needy
+                (SUM(b.quantity) - COALESCE(SUM(r.quantity), 0)) AS remaining_quantity,
+                SUM(b.quantity * p.price) AS total_donation_value
+            FROM buy b
+            JOIN plate p ON b.pid = p.pid
+            LEFT JOIN reserve r ON p.pid = r.plate_id
+            WHERE b.username = $1
+            AND EXTRACT(YEAR FROM b.buy_time) = $2
+            GROUP BY p.pid, p.description, p.price
+            ORDER BY p.pid;
+        `;
+
+		const result = await pool.query(query, [username, year]);
+
+		if (result.rows.length === 0) {
+			return res.status(404).json({
+				message: "No purchases found for this user/year.",
+			});
+		}
+
+		return res.json({
+			message: "Doner report generated",
+			report: result.rows,
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "Server error" });
+	}
+});
+
 // Start server
 app.listen(process.env.PORT, () =>
 	console.log(`Server running on port ${process.env.PORT}`)
