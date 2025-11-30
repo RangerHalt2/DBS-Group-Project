@@ -1,4 +1,5 @@
 import express from "express";
+const path = "/workspaces/DBS-Group-Project/"
 import dotenv from "dotenv";
 import cors from "cors";
 import pkg from "pg";
@@ -17,7 +18,7 @@ const pool = new Pool({
 
 // Test route
 app.get("/", (req, res) => {
-	res.send("API is running...");
+	res.sendFile(path + "/frontend/index.html");
 });
 
 // Example login endpoint
