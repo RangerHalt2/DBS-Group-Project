@@ -13,7 +13,7 @@ function App() {
 				<Route index element={<Home />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/register" element={<Register />} />
-				<Route path="/userpage" element={<UserPage />} />
+				<Route path="/user/:username" element={<UserPage />} />
 				<Route path="/restaurant" element={<Restaurant />} />
 				<Route path="*" element={<NotFound />} />
 			</Routes>

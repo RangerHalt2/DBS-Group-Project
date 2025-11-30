@@ -115,9 +115,70 @@ app.post("/api/register", async (req, res) => {
     res.json({ success: true, message: "Registration successful." });
   } catch (err) {
     console.error("Error:", err);
-    res.status(500).json({ error: "Database error." });
+    res.status(500).json({ message: "Database error." });
   }
 });
+
+app.get("/api/user/:username", async (req, res) => {
+	const username = req.params.username;
+
+	try{
+		const result = await pool.query(
+		`SELECT name, username, password, address, phone_number
+       	FROM member
+        WHERE username = $1`,
+		[username]
+		);
+
+		if (result.rows.length === 0) {
+			return res.status(404).json({ message: "Member not found" });
+		}
+
+		const user = result.rows[0];
+
+		// Determine role
+		const buyerCheck = await pool.query(
+		`SELECT * FROM buyer WHERE username = $1`,
+		[username]
+		);
+		const needyCheck = await pool.query(
+		`SELECT * FROM needy WHERE username = $1`,
+		[username]
+		);
+		const restaurantCheck = await pool.query(
+		`SELECT * FROM restaurant WHERE username = $1`,
+		[username]
+		);
+
+		let role = "unknown";
+		if (buyerCheck.rows.length > 0) role = "customer/doner";
+		if (needyCheck.rows.length > 0) role = "needy";
+		if (restaurantCheck.rows.length > 0) role = "restaurant";
+
+		// If buyer, get CC info
+		let cardName = null;
+		let cardNumber = null;
+
+		if (role === "customer/doner") {
+		const cardQuery = await pool.query(
+			`SELECT cardholder_name, card_number FROM buyer WHERE username = $1`,
+			[username]
+		);
+		if (cardQuery.rows.length > 0) {
+			cardName = cardQuery.rows[0].cardholder_name;
+			cardNumber = cardQuery.rows[0].card_number;
+		}
+		}
+
+		res.json({...user, role, cardName, cardNumber});
+
+
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "Error fetching user details." });
+	}
+});
+
 
 app.post("/api/member_lookup", async (req, res) => {
 	const { name } = req.body;

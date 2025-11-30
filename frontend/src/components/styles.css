@@ -1,6 +1,6 @@
 :root {
-    --green-text: #04382e;
-    --green-dark: #98c8ae;
+    --green-dark: #04382e;
+    --green-medium: #98c8ae;
     --green-mid: #b0d9c4;
     --green-light: #F1F8E8;
 }
@@ -24,7 +24,7 @@
 }
 
 .login-title{
-    color: var(--green-text);
+    color: var(--green-dark);
     font-size: 2rem;
     margin-bottom: 0.3rem;
 }
@@ -52,7 +52,7 @@
 }
 
 .login-button:hover{
-    background-color: var(--green-dark);
+    background-color: var(--green-medium);
 }
 
 .sign-up-button{
@@ -63,7 +63,8 @@
 }
 
 .sign-up-button:hover{
-    border: 2px solid var(--green-mid);
+    background-color: var(--green-dark);
+    color: white;
 }
 
 /* Register Page */
@@ -105,7 +106,48 @@
 }
 
 .active-role {
-  background-color: var(--green-text) !important;
-  color: white !important;
-  transform: scale(1.05);
+    background-color: var(--green-dark) !important;
+    color: white !important;
+    transform: scale(1.05);
+}
+
+
+/* User Page */
+
+.profile-form {
+    width: 90%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.field{
+    font-size: large;
+    align-content: space space-around;
+}
+
+.floating-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+
+    background-color: var(--green-dark);
+    color: white;
+    border: none;
+    font-size: 1rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.floating-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
 }

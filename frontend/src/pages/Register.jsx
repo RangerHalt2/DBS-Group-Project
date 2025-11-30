@@ -66,6 +66,7 @@ export default function Register() {
 
     if (!res.ok) return setError(data.error);
 
+    //change navigation according to page of type of member
     navigate("/userpage");
   };
 
