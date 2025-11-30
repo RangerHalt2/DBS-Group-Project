@@ -30,6 +30,9 @@ export default function Login() {
 				}
 				console.log("Login successful:", data.user);
 				setError(null);
+
+        navigate(`/user/${data.user.username}`); //redirect to userpage 
+
 			} 
       catch (err) {
 				setError("Login failed. Please try again.");
@@ -47,7 +50,7 @@ export default function Login() {
 
         {error && <p className="text-red-600">{error}</p>}
 
-        <input type="username" placeholder="Username" className="login-input"
+        <input type="text" placeholder="Username" className="login-input"
           value={username}
           onChange={(e) => {
             setUsername(e.target.value);
@@ -64,7 +67,9 @@ export default function Login() {
 
         <button type="submit" className="sign-up-button"
          onClick={() => navigate("/register")}
-        >Click here to sign up!</button>
+        >
+          Click here to sign up!
+        </button>
 
       </form>
     </div>

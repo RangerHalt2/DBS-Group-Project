@@ -78,6 +78,12 @@ export default function UserPage() {
             </div>
           </div>
         )}
+
+        <div className="role-buttons">
+          <button className="login-button">Edit</button>
+          <button className="login-button" style={{ backgroundColor: '#04382e', color: "white" }}>Delete</button>
+        </div>
+        
       </form>
 
       {/* Button is for each user to go to respective page
