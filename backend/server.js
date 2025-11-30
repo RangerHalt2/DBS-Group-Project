@@ -99,6 +99,43 @@ app.post("/api/restaurant_report", async (req, res) => {
 	}
 });
 
+app.post("/api/buyer_report", async (req, res) => {
+	const { username, year } = req.body;
+
+	try {
+		const query = `
+            SELECT
+                p.pid AS plate_id,
+                p.description,
+                p.price,
+                SUM(b.quantity) AS times_bought,
+                SUM(b.quantity) * p.price AS total_spent
+            FROM buy b
+            JOIN plate p ON b.pid = p.pid
+            WHERE b.username = $1
+              AND EXTRACT(YEAR FROM b.buy_time) = $2
+            GROUP BY p.pid, p.description, p.price
+            ORDER BY p.pid;
+        `;
+
+		const result = await pool.query(query, [username, year]);
+
+		if (result.rows.length === 0) {
+			return res.status(404).json({
+				message: "No purchases found for this user/year.",
+			});
+		}
+
+		return res.json({
+			message: "Buyer report generated",
+			report: result.rows,
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "Server error" });
+	}
+});
+
 // Start server
 app.listen(process.env.PORT, () =>
 	console.log(`Server running on port ${process.env.PORT}`)
