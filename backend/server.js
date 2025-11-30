@@ -43,6 +43,83 @@ app.post("/api/login", async (req, res) => {
 	}
 });
 
+app.post("/api/register", async (req, res) => {
+  const { role, name, email, password, address, phone, cardName, cardNumber } = req.body;
+  const roleLower = role.toLowerCase();
+
+  if (!name || !email || !password || !address || !role) {
+    return res.status(400).json({ error: "Required fields missing." });
+  }
+
+  // needy = phone optional
+  if (role !== "needy" && !phone) {
+    return res.status(400).json({ error: "Phone required for this role." });
+  }
+
+  // credit card required for customer + donor
+  if ((role === "customer" || role === "doner") && (!cardName || !cardNumber)) {
+    return res.status(400).json({ error: "Credit card info required." });
+  }
+
+  try {
+	await pool.query("BEGIN");
+
+	await pool.query(
+      `INSERT INTO member (username, password, name, address, phone_number)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [email, password, name, address, phone || null]
+    );
+
+    // Insert into specific role tables
+    if (role === "customer") {
+      await pool.query(
+        `INSERT INTO buyer (username, cardholder_name, card_number)
+         VALUES ($1, $2, $3)`,
+        [email, cardName, cardNumber]
+      );
+
+      await pool.query(
+        `INSERT INTO customer (username) VALUES ($1)`,
+        [email]
+      );
+    }
+
+    else if (role === "doner") {
+      await pool.query(
+        `INSERT INTO buyer (username, cardholder_name, card_number)
+         VALUES ($1, $2, $3)`,
+        [email, cardName, cardNumber]
+      );
+
+      await pool.query(
+        `INSERT INTO doner (username) VALUES ($1)`,
+        [email]
+      );
+    }
+
+    else if (role === "needy") {
+      await pool.query(
+        `INSERT INTO needy (username) VALUES ($1)`,
+        [email]
+      );
+    }
+
+    else { //(role === "restaurant") 
+      await pool.query(
+        `INSERT INTO restaurant (username) VALUES ($1)`,
+        [email]
+      );
+    }
+
+    await pool.query("COMMIT");
+
+    res.json({ success: true, message: "Registration successful." });
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ error: "Database error." });
+  }
+});
+
 app.post("/api/member_lookup", async (req, res) => {
 	const { name } = req.body;
 	try {

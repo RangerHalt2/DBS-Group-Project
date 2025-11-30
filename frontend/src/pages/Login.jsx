@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../components/styles.css";
 //imports
 
@@ -6,6 +7,7 @@ export default function Login() {
   const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState(null);
+  const navigate = useNavigate(); //go to register page or after logging-in
 
   const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -60,7 +62,9 @@ export default function Login() {
         
         <button type="submit" className="login-button">Login</button>
 
-        <button type="submit" className="sign-up-button">Click here to sign up!</button>
+        <button type="submit" className="sign-up-button"
+         onClick={() => navigate("/register")}
+        >Click here to sign up!</button>
 
       </form>
     </div>

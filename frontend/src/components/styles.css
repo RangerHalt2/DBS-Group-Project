@@ -103,3 +103,9 @@
     width: 100%;
     margin-top: 10px;
 }
+
+.active-role {
+  background-color: var(--green-text) !important;
+  color: white !important;
+  transform: scale(1.05);
+}

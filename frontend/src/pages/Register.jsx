@@ -1,7 +1,75 @@
-//import { useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../components/styles.css";
 
 export default function Register() {
+  const navigate = useNavigate();
+
+    const [role, setRole] = useState("");
+    const [form, setForm] = useState({
+      name: "",
+      email: "",
+      password: "",
+      address: "",
+      phone: "",
+      cardName: "",
+      cardNumber: ""
+    });
+
+    const [error, setError] = useState(null);
+
+    const handleRole = (selectedRole) => {
+      setRole(selectedRole);
+      setError("");
+    };
+
+    const handleChange = (e) => {
+      setForm({ ...form, [e.target.placeholder]: e.target.value });
+    };
+
+    //validation
+
+    const validateForm = () => {
+    if (!role) return "Please select a role.";
+
+    // Required for ALL:
+    if (!form.name || !form.email || !form.password || !form.address) {
+      return "Please fill in all required fields.";
+    }
+
+    // Phone required EXCEPT needy
+    if (role !== "Needy" && !form.phone) {
+      return "Phone number is required for this role.";
+    }
+
+    // Credit card required only for Customer + Doner
+    if ((role === "Customer" || role === "Doner") &&
+        (!form.cardName || !form.cardNumber)) {
+      return "Credit card information is required for this role.";
+    }
+
+    return "";
+  };
+
+  // submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const msg = validateForm();
+    if (msg) return setError(msg);
+
+    const res = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role, ...form }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) return setError(data.error);
+
+    navigate("/userpage");
+  };
+
   return (
     <div className="bg register-container">
 
@@ -9,36 +77,69 @@ export default function Register() {
         <h1 className="login-title">Who are you?</h1>
 
         <div className="role-buttons">
-          <button type="button" className="login-button">Customer</button>
-          <button type="button" className="login-button">Needy</button>
-          <button type="button" className="login-button">Donor</button>
-          <button type="button" className="login-button">Restaurant</button>
+          {["Customer", "Needy", "Doner", "Restaurant"].map((r) => (
+            <button
+              key={r}
+              type="button"
+              className={`login-button ${role === r ? "active-role" : ""}`}
+              onClick={() => handleRole(r)}
+            >
+              {r}
+            </button>
+          ))}
         </div>
+
       </section>
 
-      <form className="login-card" style={{ padding: '2.5rem 3rem', width: '80%', maxWidth: '950px' }}>
-        <h2 className="login-title" style={{ paddingBottom: '10px', fontSize: '1.5rem'}}>Enter registration details here:</h2>
+      {/* Hide form until role selected */}
+      {role && (
+        <form
+          className="login-card"
+          style={{ padding: "2.5rem 3rem", width: "80%", maxWidth: "950px" }}
+          onSubmit={handleSubmit}
+        >
+          <h2 className="login-title" style={{ paddingBottom: "10px", fontSize: "1.5rem" }}>
+            Register as {role}
+          </h2>
 
-        <div className="row">
-          <input type="text" placeholder="Name" className="login-input" />
-          <input type="email" placeholder="Email" className="login-input" />
-          <input type="password" placeholder="Password" className="login-input" />
-        </div>
+          {error && <p className="error-text">{error}</p>}
 
-        <div className="row">
-          <input type="text" placeholder="Address" className="login-input" />
-          <input type="text" placeholder="Phone" className="login-input" />
-        </div>
+          {/* Row 1 */}
+          <div className="row">
+            <input type="text" placeholder="name" className="login-input" onChange={handleChange} />
+            <input type="email" placeholder="email" className="login-input" onChange={handleChange} />
+            <input type="password" placeholder="password" className="login-input" onChange={handleChange} />
+          </div>
 
-        <div className="row">
-          <input type="text" placeholder="Cardholder Name" className="login-input" />
-          <input type="text" placeholder="Card Number" className="login-input" />
-          <input type="text" placeholder="Exp Date (MM/YY)" className="login-input" />
-          <input type="text" placeholder="CVV" className="login-input" />
-        </div>
+          {/* Row 2 */}
+          <div className="row">
+            <input type="text" placeholder="address" className="login-input" onChange={handleChange} />
+            <input type="text" placeholder="phone" className="login-input" onChange={handleChange} />
+          </div>
 
-        <button type="submit" className="login-button submit-btn">Sign Up</button>
-      </form>
+          {/* CREDIT CARD ROW — only for Customer + Doner */}
+          {(role === "Customer" || role === "Doner") && (
+            <div className="row">
+              <input
+                type="text"
+                placeholder="cardName"
+                className="login-input"
+                onChange={handleChange}
+              />
+              <input
+                type="text"
+                placeholder="cardNumber"
+                className="login-input"
+                onChange={handleChange}
+              />
+            </div>
+          )}
+
+          <button type="submit" className="login-button submit-btn">
+            Sign Up
+          </button>
+        </form>
+      )}
 
     </div>
   );
