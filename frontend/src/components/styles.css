@@ -1,0 +1,105 @@
+:root {
+    --green-text: #04382e;
+    --green-dark: #98c8ae;
+    --green-mid: #b0d9c4;
+    --green-light: #F1F8E8;
+}
+
+.bg{
+    background-color: var(--green-mid);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Login Page */
+.login-card{
+    background-color: var(--green-light);
+    text-align: center;
+    padding: 2.5rem 2.7rem;
+    border-radius: 18px;
+    width: 360px;
+    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.login-title{
+    color: var(--green-text);
+    font-size: 2rem;
+    margin-bottom: 0.3rem;
+}
+
+.login-input{
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 1rem;
+    border: 2px solid var(--green-mid);
+    border-radius: 25px;
+    outline: none;
+}
+
+.login-input:focus{
+    border-color: var(--green-mid);
+    box-shadow: 0 0 0 5px rgba(149, 210, 179, 0.25);
+}
+
+.login-button{
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 25px;
+    background-color: var(--green-mid);
+    margin-bottom: 1rem;
+}
+
+.login-button:hover{
+    background-color: var(--green-dark);
+}
+
+.sign-up-button{
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 25px;
+    border: 2px solid var(--green-light);
+}
+
+.sign-up-button:hover{
+    border: 2px solid var(--green-mid);
+}
+
+/* Register Page */
+
+.register-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 35px;
+}
+
+.role-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+/* Align inputs in neat rows */
+.row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin-bottom: 1.1rem;
+}
+
+/* Role buttons same style as login-button but smaller width */
+.role-buttons .login-button {
+    width: auto;
+    min-width: 130px;
+    padding: 10px 20px;
+}
+
+/* Make submit button full width */
+.submit-btn {
+    width: 100%;
+    margin-top: 10px;
+}
