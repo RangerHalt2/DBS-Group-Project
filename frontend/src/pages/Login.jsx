@@ -47,7 +47,7 @@ export default function Login() {
 
         {error && <p className="text-red-600">{error}</p>}
 
-        <input type="email" placeholder="Email" className="login-input"
+        <input type="username" placeholder="Username" className="login-input"
           value={username}
           onChange={(e) => {
             setUsername(e.target.value);

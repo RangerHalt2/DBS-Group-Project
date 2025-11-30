@@ -44,10 +44,9 @@ app.post("/api/login", async (req, res) => {
 });
 
 app.post("/api/register", async (req, res) => {
-  const { role, name, email, password, address, phone, cardName, cardNumber } = req.body;
-  const roleLower = role.toLowerCase();
+  const { role, name, username, password, address, phone, cardName, cardNumber } = req.body;
 
-  if (!name || !email || !password || !address || !role) {
+  if (!name || !username || !password || !address || !role) {
     return res.status(400).json({ error: "Required fields missing." });
   }
 
@@ -67,7 +66,7 @@ app.post("/api/register", async (req, res) => {
 	await pool.query(
       `INSERT INTO member (username, password, name, address, phone_number)
        VALUES ($1, $2, $3, $4, $5)`,
-      [email, password, name, address, phone || null]
+      [username, password, name, address, phone || 'N/A']
     );
 
     // Insert into specific role tables
@@ -75,12 +74,12 @@ app.post("/api/register", async (req, res) => {
       await pool.query(
         `INSERT INTO buyer (username, cardholder_name, card_number)
          VALUES ($1, $2, $3)`,
-        [email, cardName, cardNumber]
+        [username, cardName, cardNumber]
       );
 
       await pool.query(
         `INSERT INTO customer (username) VALUES ($1)`,
-        [email]
+        [username]
       );
     }
 
@@ -88,26 +87,26 @@ app.post("/api/register", async (req, res) => {
       await pool.query(
         `INSERT INTO buyer (username, cardholder_name, card_number)
          VALUES ($1, $2, $3)`,
-        [email, cardName, cardNumber]
+        [username, cardName, cardNumber]
       );
 
       await pool.query(
         `INSERT INTO doner (username) VALUES ($1)`,
-        [email]
+        [username]
       );
     }
 
     else if (role === "needy") {
       await pool.query(
         `INSERT INTO needy (username) VALUES ($1)`,
-        [email]
+        [username]
       );
     }
 
     else { //(role === "restaurant") 
       await pool.query(
         `INSERT INTO restaurant (username) VALUES ($1)`,
-        [email]
+        [username]
       );
     }
 

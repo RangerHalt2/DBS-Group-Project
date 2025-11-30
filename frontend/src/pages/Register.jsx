@@ -8,7 +8,7 @@ export default function Register() {
     const [role, setRole] = useState("");
     const [form, setForm] = useState({
       name: "",
-      email: "",
+      username: "",
       password: "",
       address: "",
       phone: "",
@@ -28,12 +28,11 @@ export default function Register() {
     };
 
     //validation
-
     const validateForm = () => {
     if (!role) return "Please select a role.";
 
     // Required for ALL:
-    if (!form.name || !form.email || !form.password || !form.address) {
+    if (!form.name || !form.username || !form.password || !form.address) {
       return "Please fill in all required fields.";
     }
 
@@ -57,10 +56,10 @@ export default function Register() {
     const msg = validateForm();
     if (msg) return setError(msg);
 
-    const res = await fetch("/api/register", {
+    const res = await fetch("http://localhost:3001/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ role, ...form }),
+      body: JSON.stringify({ role: role.toLowerCase(), ...form }),
     });
 
     const data = await res.json();
@@ -104,14 +103,12 @@ export default function Register() {
 
           {error && <p className="error-text">{error}</p>}
 
-          {/* Row 1 */}
           <div className="row">
             <input type="text" placeholder="name" className="login-input" onChange={handleChange} />
-            <input type="email" placeholder="email" className="login-input" onChange={handleChange} />
+            <input type="text" placeholder="username" className="login-input" onChange={handleChange} />
             <input type="password" placeholder="password" className="login-input" onChange={handleChange} />
           </div>
 
-          {/* Row 2 */}
           <div className="row">
             <input type="text" placeholder="address" className="login-input" onChange={handleChange} />
             <input type="text" placeholder="phone" className="login-input" onChange={handleChange} />
