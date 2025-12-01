@@ -1,15 +1,28 @@
 import express from "express";
-const path = "/workspaces/DBS-Group-Project/"
+//const path = "/workspaces/DBS-Group-Project/";
 import dotenv from "dotenv";
 import cors from "cors";
 import pkg from "pg";
+import cookieParser from "cookie-parser";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 const { Pool } = pkg;
 
 const app = express();
-app.use(cors());
+
+app.use(
+	cors({
+		origin: "http://localhost:5173", // frontend URL
+		credentials: true, // allow cookies
+	})
+);
 app.use(express.json());
+app.use(cookieParser());
 
 // Create database pool
 const pool = new Pool({
@@ -18,7 +31,28 @@ const pool = new Pool({
 
 // Test route
 app.get("/", (req, res) => {
-	res.sendFile(path + "/frontend/index.html");
+	res.json({ status: "ok", message: "API is running..." });
+});
+
+function requireAdmin(req, res, next) {
+	const adminUser = req.cookies.adminUser;
+	if (!adminUser) {
+		return res
+			.status(401)
+			.json({ message: "Unauthorized: Admin login required" });
+	}
+	req.adminUser = adminUser;
+	next();
+}
+
+app.post("/api/admin/me", (req, res) => {
+	const adminUser = req.cookies.adminUser;
+	if (!adminUser) {
+		return res.status(401).json({ message: "Unauthorized" });
+	}
+
+	// Return whatever info you want, e.g., name
+	return res.status(200).json({ name: adminUser });
 });
 
 // Example login endpoint
@@ -44,91 +78,153 @@ app.post("/api/login", async (req, res) => {
 	}
 });
 
+app.post("/api/admin_login", async (req, res) => {
+	const { username, password } = req.body;
+
+	try {
+		const query = `
+            SELECT * FROM administrator 
+            WHERE username = $1 AND password = $2;
+        `;
+
+		const result = await pool.query(query, [username, password]);
+
+		if (result.rows.length === 0) {
+			return res.status(401).json({ message: "Invalid credentials" });
+		}
+
+		res.cookie("adminUser", result.rows[0].name, {
+			httpOnly: true,
+			sameSite: "Lax",
+			secure: false,
+			path: "/",
+		});
+
+		return res.json({ message: "Login successful", admin: result.rows[0] });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "Server error" });
+	}
+});
+
+app.post("/api/admin_register", requireAdmin, async (req, res) => {
+	const { ssn, name, salary, username, password } = req.body;
+
+	try {
+		const query = `
+      INSERT INTO administrator (ssn, name, salary, username, password)
+      VALUES ($1, $2, $3, $4, $5);
+    `;
+
+		const result = await pool.query(query, [
+			ssn,
+			name,
+			salary,
+			username,
+			password,
+		]);
+
+		if (result.rowCount === 0) {
+			return res
+				.status(400)
+				.json({ message: "Administrator registration failed" });
+		}
+
+		return res.json({
+			message: "Administrator registered successfully",
+			admin: result.rows[0],
+		});
+	} catch (err) {
+		console.error(err);
+		if (err.code === "23505") {
+			//unique violation
+			return res.status(400).json({ message: "Admin Already Exist" });
+		}
+		res.status(500).json({ message: "Server error" });
+	}
+});
+
 app.post("/api/register", async (req, res) => {
-  const { role, name, username, password, address, phone, cardName, cardNumber } = req.body;
+	const {
+		role,
+		name,
+		username,
+		password,
+		address,
+		phone,
+		cardName,
+		cardNumber,
+	} = req.body;
 
-  if (!name || !username || !password || !address || !role) {
-    return res.status(400).json({ error: "Required fields missing." });
-  }
+	if (!name || !username || !password || !address || !role) {
+		return res.status(400).json({ error: "Required fields missing." });
+	}
 
-  // needy = phone optional
-  if (role !== "needy" && !phone) {
-    return res.status(400).json({ error: "Phone required for this role." });
-  }
+	// needy = phone optional
+	if (role !== "needy" && !phone) {
+		return res.status(400).json({ error: "Phone required for this role." });
+	}
 
-  // credit card required for customer + donor
-  if ((role === "customer" || role === "doner") && (!cardName || !cardNumber)) {
-    return res.status(400).json({ error: "Credit card info required." });
-  }
+	// credit card required for customer + donor
+	if ((role === "customer" || role === "doner") && (!cardName || !cardNumber)) {
+		return res.status(400).json({ error: "Credit card info required." });
+	}
 
-  try {
-	await pool.query("BEGIN");
+	try {
+		await pool.query("BEGIN");
 
-	await pool.query(
-      `INSERT INTO member (username, password, name, address, phone_number)
+		await pool.query(
+			`INSERT INTO member (username, password, name, address, phone_number)
        VALUES ($1, $2, $3, $4, $5)`,
-      [username, password, name, address, phone || 'N/A']
-    );
+			[username, password, name, address, phone || "N/A"]
+		);
 
-    // Insert into specific role tables
-    if (role === "customer") {
-      await pool.query(
-        `INSERT INTO buyer (username, cardholder_name, card_number)
+		// Insert into specific role tables
+		if (role === "customer") {
+			await pool.query(
+				`INSERT INTO buyer (username, cardholder_name, card_number)
          VALUES ($1, $2, $3)`,
-        [username, cardName, cardNumber]
-      );
+				[username, cardName, cardNumber]
+			);
 
-      await pool.query(
-        `INSERT INTO customer (username) VALUES ($1)`,
-        [username]
-      );
-    }
-
-    else if (role === "doner") {
-      await pool.query(
-        `INSERT INTO buyer (username, cardholder_name, card_number)
+			await pool.query(`INSERT INTO customer (username) VALUES ($1)`, [
+				username,
+			]);
+		} else if (role === "doner") {
+			await pool.query(
+				`INSERT INTO buyer (username, cardholder_name, card_number)
          VALUES ($1, $2, $3)`,
-        [username, cardName, cardNumber]
-      );
+				[username, cardName, cardNumber]
+			);
 
-      await pool.query(
-        `INSERT INTO doner (username) VALUES ($1)`,
-        [username]
-      );
-    }
+			await pool.query(`INSERT INTO doner (username) VALUES ($1)`, [username]);
+		} else if (role === "needy") {
+			await pool.query(`INSERT INTO needy (username) VALUES ($1)`, [username]);
+		} else {
+			//(role === "restaurant")
+			await pool.query(`INSERT INTO restaurant (username) VALUES ($1)`, [
+				username,
+			]);
+		}
 
-    else if (role === "needy") {
-      await pool.query(
-        `INSERT INTO needy (username) VALUES ($1)`,
-        [username]
-      );
-    }
+		await pool.query("COMMIT");
 
-    else { //(role === "restaurant") 
-      await pool.query(
-        `INSERT INTO restaurant (username) VALUES ($1)`,
-        [username]
-      );
-    }
-
-    await pool.query("COMMIT");
-
-    res.json({ success: true, message: "Registration successful." });
-  } catch (err) {
-    console.error("Error:", err);
-    res.status(500).json({ message: "Database error." });
-  }
+		res.json({ success: true, message: "Registration successful." });
+	} catch (err) {
+		console.error("Error:", err);
+		res.status(500).json({ message: "Database error." });
+	}
 });
 
 app.get("/api/user/:username", async (req, res) => {
 	const username = req.params.username;
 
-	try{
+	try {
 		const result = await pool.query(
-		`SELECT name, username, password, address, phone_number
+			`SELECT name, username, password, address, phone_number
        	FROM member
         WHERE username = $1`,
-		[username]
+			[username]
 		);
 
 		if (result.rows.length === 0) {
@@ -139,16 +235,16 @@ app.get("/api/user/:username", async (req, res) => {
 
 		// Determine role
 		const buyerCheck = await pool.query(
-		`SELECT * FROM buyer WHERE username = $1`,
-		[username]
+			`SELECT * FROM buyer WHERE username = $1`,
+			[username]
 		);
 		const needyCheck = await pool.query(
-		`SELECT * FROM needy WHERE username = $1`,
-		[username]
+			`SELECT * FROM needy WHERE username = $1`,
+			[username]
 		);
 		const restaurantCheck = await pool.query(
-		`SELECT * FROM restaurant WHERE username = $1`,
-		[username]
+			`SELECT * FROM restaurant WHERE username = $1`,
+			[username]
 		);
 
 		let role = "unknown";
@@ -161,19 +257,17 @@ app.get("/api/user/:username", async (req, res) => {
 		let cardNumber = null;
 
 		if (role === "customer/doner") {
-		const cardQuery = await pool.query(
-			`SELECT cardholder_name, card_number FROM buyer WHERE username = $1`,
-			[username]
-		);
-		if (cardQuery.rows.length > 0) {
-			cardName = cardQuery.rows[0].cardholder_name;
-			cardNumber = cardQuery.rows[0].card_number;
+			const cardQuery = await pool.query(
+				`SELECT cardholder_name, card_number FROM buyer WHERE username = $1`,
+				[username]
+			);
+			if (cardQuery.rows.length > 0) {
+				cardName = cardQuery.rows[0].cardholder_name;
+				cardNumber = cardQuery.rows[0].card_number;
+			}
 		}
-		}
 
-		res.json({...user, role, cardName, cardNumber});
-
-
+		res.json({ ...user, role, cardName, cardNumber });
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ message: "Error fetching user details." });
@@ -306,8 +400,7 @@ app.delete("/api/restaurant/items/:pid", async (req, res) => {
   }
 });
 
-
-app.post("/api/member_lookup", async (req, res) => {
+app.post("/api/member_lookup", requireAdmin, async (req, res) => {
 	const { name } = req.body;
 	try {
 		const query = `
@@ -328,8 +421,10 @@ app.post("/api/member_lookup", async (req, res) => {
 	}
 });
 
-app.post("/api/restaurant_report", async (req, res) => {
+app.post("/api/restaurant_report", requireAdmin, async (req, res) => {
 	const { name, year } = req.body;
+
+	console.log("restaurant report request:", req.body);
 
 	try {
 		const query = `
@@ -363,8 +458,8 @@ app.post("/api/restaurant_report", async (req, res) => {
 	}
 });
 
-app.post("/api/buyer_report", async (req, res) => {
-	const { username, year } = req.body;
+app.post("/api/buyer_report", requireAdmin, async (req, res) => {
+	const { name, year } = req.body;
 
 	try {
 		const query = `
@@ -376,13 +471,14 @@ app.post("/api/buyer_report", async (req, res) => {
                 SUM(b.quantity) * p.price AS total_spent
             FROM buy b
             JOIN plate p ON b.pid = p.pid
-            WHERE b.username = $1
+            JOIN member m ON b.username = m.username
+            WHERE m.name = $1
               AND EXTRACT(YEAR FROM b.buy_time) = $2
             GROUP BY p.pid, p.description, p.price
             ORDER BY p.pid;
         `;
 
-		const result = await pool.query(query, [username, year]);
+		const result = await pool.query(query, [name, year]);
 
 		if (result.rows.length === 0) {
 			return res.status(404).json({
@@ -400,8 +496,8 @@ app.post("/api/buyer_report", async (req, res) => {
 	}
 });
 
-app.post("/api/needy_report", async (req, res) => {
-	const { username, year } = req.body;
+app.post("/api/needy_report", requireAdmin, async (req, res) => {
+	const { name, year } = req.body;
 
 	try {
 		const query = `
@@ -413,13 +509,14 @@ app.post("/api/needy_report", async (req, res) => {
                 SUM(r.quantity * p.price) AS total_value_received
             FROM reserve r
             JOIN plate p ON r.plate_id = p.pid
-            WHERE r.member_username = $1
+            JOIN member m ON r.member_username = m.username
+            WHERE m.name = $1
               AND EXTRACT(YEAR FROM r.pick_up_time) = $2
             GROUP BY p.pid, p.description, p.price
             ORDER BY p.pid;
         `;
 
-		const result = await pool.query(query, [username, year]);
+		const result = await pool.query(query, [name, year]);
 
 		if (result.rows.length === 0) {
 			return res.status(404).json({
@@ -437,8 +534,8 @@ app.post("/api/needy_report", async (req, res) => {
 	}
 });
 
-app.post("/api/doner_report", async (req, res) => {
-	const { username, year } = req.body;
+app.post("/api/doner_report", requireAdmin, async (req, res) => {
+	const { name, year } = req.body;
 
 	try {
 		const query = `
@@ -453,14 +550,15 @@ app.post("/api/doner_report", async (req, res) => {
             FROM buy b
             JOIN plate p ON b.pid = p.pid
             JOIN doner d ON d.username = b.username
+            JOIN member m ON b.username = m.username
             LEFT JOIN reserve r ON p.pid = r.plate_id
-            WHERE b.username = $1
+            WHERE m.name = $1
             AND EXTRACT(YEAR FROM b.buy_time) = $2
             GROUP BY p.pid, p.description, p.price
             ORDER BY p.pid;
         `;
 
-		const result = await pool.query(query, [username, year]);
+		const result = await pool.query(query, [name, year]);
 
 		if (result.rows.length === 0) {
 			return res.status(404).json({

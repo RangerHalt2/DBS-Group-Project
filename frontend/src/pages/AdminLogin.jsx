@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/styles.css";
-//imports
 
-export default function Login() {
+export default function AdminLogin() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState(null);
@@ -16,8 +15,9 @@ export default function Login() {
 			setError("Both fields are required.");
 		} else {
 			try {
-				const response = await fetch("http://localhost:3001/api/login", {
+				const response = await fetch("http://localhost:3001/api/admin_login", {
 					method: "POST",
+					credentials: "include",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({ username, password }),
 				});
@@ -30,7 +30,7 @@ export default function Login() {
 				console.log("Login successful:", data.user);
 				setError(null);
 
-				navigate(`/user/${data.user.username}`); //redirect to userpage
+				navigate(`/AdminHub`); //redirect to userpage
 			} catch (err) {
 				setError("Login failed. Please try again.");
 				console.error(err);
@@ -41,7 +41,7 @@ export default function Login() {
 	return (
 		<div className="bg">
 			<form onSubmit={handleSubmit} className="login-card">
-				<h1 className="login-title">Welcome to WNK!</h1>
+				<h1 className="login-title">Welcome Admin</h1>
 
 				{error && <p className="text-red-600">{error}</p>}
 
@@ -71,7 +71,7 @@ export default function Login() {
 				<button
 					type="submit"
 					className="sign-up-button"
-					onClick={() => navigate("/register")}
+					onClick={() => navigate("/AdminRegister")}
 				>
 					Click here to sign up!
 				</button>
