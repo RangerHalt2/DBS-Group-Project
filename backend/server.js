@@ -274,6 +274,98 @@ app.get("/api/user/:username", async (req, res) => {
 	}
 });
 
+// Edit a user
+app.put("/api/user/:username", async (req, res) => {
+	const username = req.params.username;
+	const { name, password, address, phone_number, cardName, cardNumber } = req.body;
+
+	try {
+		await pool.query("BEGIN");
+
+		// Update member table
+		await pool.query(
+			`UPDATE member
+			 SET name = $1,
+			     password = $2,
+			     address = $3,
+			     phone_number = $4
+			 WHERE username = $5`,
+			[name, password, address, phone_number, username]
+		);
+
+		// update buyer table if the user is a customer/doner
+		if (cardName !== undefined || cardNumber !== undefined) {
+			await pool.query(
+				`UPDATE buyer
+				 SET cardholder_name = $1,
+				     card_number = $2
+				 WHERE username = $3`,
+				[cardName, cardNumber, username]
+			);
+		}
+
+		await pool.query("COMMIT");
+
+		res.json({ message: "User updated successfully" });
+	} catch (err) {
+		console.error("UPDATE USER ERROR:", err);
+		await pool.query("ROLLBACK");
+		res.status(500).json({ message: "Error updating user." });
+	}
+});
+
+// Delete a user completely
+app.delete("/api/user/:username", async (req, res) => {
+	const username = req.params.username;
+
+	try {
+		await pool.query("BEGIN");
+
+		await pool.query(
+			`DELETE FROM doner WHERE username = $1`,
+			[username]
+		);
+
+		await pool.query(
+			`DELETE FROM customer WHERE username = $1`,
+			[username]
+		);
+		
+		await pool.query(
+			`DELETE FROM buyer WHERE username = $1`,
+			[username]
+		);
+
+		await pool.query(
+			`DELETE FROM needy WHERE username = $1`,
+			[username]
+		);
+
+		await pool.query(
+			`DELETE FROM restaurant WHERE username = $1`,
+			[username]
+		);
+
+		await pool.query(
+			`DELETE FROM reserve WHERE member_username = $1`,
+			[username]
+		);
+
+		await pool.query(
+			`DELETE FROM member WHERE username = $1`,
+			[username]
+		);
+
+		await pool.query("COMMIT");
+
+		res.json({ message: "User deleted successfully" });
+	} catch (err) {
+		console.error("DELETE USER ERROR:", err);
+		await pool.query("ROLLBACK");
+		res.status(500).json({ message: "Error deleting user." });
+	}
+});
+
 // Get all items for a restaurant
 app.get("/api/restaurant/items", async (req, res) => {
 	const { username } = req.query;
