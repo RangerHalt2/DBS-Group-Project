@@ -1,6 +1,3 @@
 export const Home = () => {
-	return (
-		<div className="bg">
-		</div>
-	);
+	return <div className="bg"></div>;
 };
