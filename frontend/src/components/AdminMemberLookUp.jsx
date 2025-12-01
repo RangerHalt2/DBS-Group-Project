@@ -35,6 +35,8 @@ export default function AdminMemberLookUp() {
 			}
 		} catch (err) {
 			setError("An error occurred while fetching the member");
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -46,15 +48,38 @@ export default function AdminMemberLookUp() {
 				className="bg-lime-200 text-center rounded-full m-2 outline outline-2 outline-gray-400 outline-offset-3"
 				placeholder="Member Name"
 				value={name}
-				onChange={(e) => setUsername(e.target.value)}
+				onChange={(e) => {
+					setUsername(e.target.value);
+					setError(null);
+				}}
 			/>
 			<button
 				onClick={fetchMember}
 				disabled={loading}
 				className="bg-gray-500 text-white px-3 py-1 rounded ml-2 disabled:opacity-50 m-2"
 			>
-				{loading ? "Loading..." : "Generate Report"}
+				{loading ? "Loading..." : "Look Up Member"}
 			</button>
+			{error && <p style={{ color: "red" }}>{error}</p>}
+
+			{member && member.length > 0 && (
+				<div className="text-center bg-lime-50">
+					<p>Username: {member[0].username}</p>
+					<p>Password: {member[0].password}</p>
+					<p>Name: {member[0].name}</p>
+					<p>Address: {member[0].address}</p>
+					<p>Phone: {member[0].phone_number}</p>
+				</div>
+			)}
+			{member && (
+				<button
+					onClick={() => setMember(null)}
+					disabled={member === null}
+					className="bg-gray-500 text-white px-3 py-1 rounded ml-2 disabled:opacity-0"
+				>
+					Clear Report
+				</button>
+			)}
 		</div>
 	);
 }
