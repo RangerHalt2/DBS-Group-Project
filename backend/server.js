@@ -14,7 +14,13 @@ dotenv.config();
 const { Pool } = pkg;
 
 const app = express();
-app.use(cors());
+
+app.use(
+	cors({
+		origin: "http://localhost:5173", // frontend URL
+		credentials: true, // allow cookies
+	})
+);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -38,6 +44,16 @@ function requireAdmin(req, res, next) {
 	req.adminUser = adminUser;
 	next();
 }
+
+app.post("/api/admin/me", (req, res) => {
+	const adminUser = req.cookies.adminUser;
+	if (!adminUser) {
+		return res.status(401).json({ message: "Unauthorized" });
+	}
+
+	// Return whatever info you want, e.g., name
+	return res.status(200).json({ name: adminUser });
+});
 
 // Example login endpoint
 app.post("/api/login", async (req, res) => {
@@ -79,8 +95,9 @@ app.post("/api/admin_login", async (req, res) => {
 
 		res.cookie("adminUser", result.rows[0].name, {
 			httpOnly: true,
-			sameSite: "Strict",
+			sameSite: "Lax",
 			secure: false,
+			path: "/",
 		});
 
 		return res.json({ message: "Login successful", admin: result.rows[0] });

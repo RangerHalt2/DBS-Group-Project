@@ -23,6 +23,7 @@ export default function AdminRegister() {
 					"http://localhost:3001/api/admin_register",
 					{
 						method: "POST",
+						credentials: "include",
 						headers: { "Content-Type": "application/json" },
 						body: JSON.stringify({ ssn, name, salary, username, password }),
 					}

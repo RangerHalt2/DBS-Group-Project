@@ -19,6 +19,7 @@ export default function AdminNeedyReport() {
 			// Replace with your API endpoint
 			const response = await fetch("http://localhost:3001/api/needy_report", {
 				method: "POST",
+				credentials: "include",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ name, year }),
 			});

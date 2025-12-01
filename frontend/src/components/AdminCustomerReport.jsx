@@ -19,6 +19,7 @@ export default function AdminCustomerReport() {
 			// Replace with your API endpoint
 			const response = await fetch("http://localhost:3001/api/buyer_report", {
 				method: "POST",
+				credentials: "include",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ name, year }),
 			});

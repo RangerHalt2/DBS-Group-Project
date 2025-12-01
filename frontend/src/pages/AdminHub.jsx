@@ -2,11 +2,36 @@ import AdminRestaurantReports from "../components/AdminRestaurantReports";
 import AdminCustomerReport from "../components/AdminCustomerReport";
 import AdminDonerReport from "../components/AdminDonerReport";
 import AdminNeedyReport from "../components/AdminNeedyReport";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const AdminHub = () => {
 	const [activeReport, setActiveReport] = useState("restaurant");
 	const [adminName, setAdminName] = useState("Admin"); // Placeholder for admin name
+
+	useEffect(() => {
+		const fetchAdmin = async () => {
+			try {
+				const res = await fetch("http://localhost:3001/api/admin/me", {
+					method: "POST",
+					credentials: "include", // important to send cookies
+				});
+
+				if (res.status === 401) {
+					// Not authorized → redirect to index
+					window.location.href = "/";
+					return;
+				}
+
+				const data = await res.json();
+				setAdminName(data.name);
+			} catch (err) {
+				console.error("Error fetching admin info:", err);
+				window.location.href = "/";
+			}
+		};
+
+		fetchAdmin();
+	}, []);
 
 	return (
 		<div className="flex pt-16">

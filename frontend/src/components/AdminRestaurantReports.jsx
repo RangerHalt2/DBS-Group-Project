@@ -21,6 +21,7 @@ export default function AdminRestaurantReports() {
 				"http://localhost:3001/api/restaurant_report",
 				{
 					method: "POST",
+					credentials: "include",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({ name: restaurant, year }),
 				}
