@@ -3,6 +3,7 @@ const path = "/workspaces/DBS-Group-Project/";
 import dotenv from "dotenv";
 import cors from "cors";
 import pkg from "pg";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 const { Pool } = pkg;
@@ -20,6 +21,17 @@ const pool = new Pool({
 app.get("/", (req, res) => {
 	res.sendFile(path + "/frontend/index.html");
 });
+
+function requireAdmin(req, res, next) {
+	const adminUser = req.cookies.adminUser;
+	if (!adminUser) {
+		return res
+			.status(401)
+			.json({ message: "Unauthorized: Admin login required" });
+	}
+	req.adminUser = adminUser;
+	next();
+}
 
 // Example login endpoint
 app.post("/api/login", async (req, res) => {
@@ -59,6 +71,12 @@ app.post("/api/admin_login", async (req, res) => {
 			return res.status(401).json({ message: "Invalid credentials" });
 		}
 
+		res.cookie("adminUser", username, {
+			httpOnly: true,
+			sameSite: "Strict",
+			secure: false,
+		});
+
 		return res.json({ message: "Login successful", admin: result.rows[0] });
 	} catch (err) {
 		console.error(err);
@@ -66,7 +84,7 @@ app.post("/api/admin_login", async (req, res) => {
 	}
 });
 
-app.post("/api/admin_register", async (req, res) => {
+app.post("/api/admin_register", requireAdmin, async (req, res) => {
 	const { ssn, name, salary, username, password } = req.body;
 
 	try {
