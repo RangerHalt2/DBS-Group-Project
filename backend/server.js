@@ -686,6 +686,37 @@ app.post("/api/doner_report", requireAdmin, async (req, res) => {
 	}
 });
 
+app.get("/api/buyplates", async (req, res) => {
+	try {
+		const query = `
+            SELECT
+				p.description,
+				p.quantity,
+				p.price
+			FROM plate p
+			WHERE p.quantity > 0
+			ORDER BY p.quantity ASC
+        `;
+
+		const result = await pool.query(query, [name, year]);
+
+		if (result.rows.length === 0) {
+			return res.status(404).json({
+				message: "No plates available to purchase.",
+			});
+		}
+
+		return res.json({
+			message: "List of plates generated",
+			report: result.rows,
+		});
+
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "Server error" });
+	}
+});
+
 // Start server
 app.listen(process.env.PORT, () =>
 	console.log(`Server running on port ${process.env.PORT}`)

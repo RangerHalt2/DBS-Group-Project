@@ -14,8 +14,13 @@ const Navbar = () => {
 					<li>
 						<a href="/login">Login</a>
 					</li>
+					<li><h1>|</h1></li>
 					<li>
 						<a href="/register">Register</a>
+					</li>
+					<li><h1>|</h1></li>
+					<li>
+						<a href="/plates">Available Plates</a>
 					</li>
 				</ul>
 			</div>

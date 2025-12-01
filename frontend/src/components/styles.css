@@ -289,3 +289,27 @@
     width: 100%;
     margin-top: 1rem;
 }
+
+.home-bg {
+    background-color: var(--green-mid);
+    min-height: 100vh;
+    justify-content: center;
+    align-content: center;
+}
+
+.hline {
+    border-color: var(--green-dark);
+    max-width: 25%;
+    margin: auto;
+    height: 3vh;
+}
+
+.paragraph {
+    max-width: 30%;
+    margin: auto;
+}
+
+.image {
+    height: 10vh;
+    width: auto;
+}

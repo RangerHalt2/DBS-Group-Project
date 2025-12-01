@@ -8,6 +8,7 @@ import Restaurant from "./pages/Restaurant";
 import AdminLogin from "./pages/AdminLogin";
 import AdminRegister from "./pages/AdminRegister";
 import { AdminHub } from "./pages/AdminHub";
+import Plates from "./pages/Plates";
 import Navbar from "./Navbar";
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
 		<BrowserRouter>
 			<Navbar />
 			<Routes>
-				<Route path="/" element={<Login />} />
+				<Route path="/" element={<Home />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/adminLogin" element={<AdminLogin />} />
 				<Route path="/AdminRegister" element={<AdminRegister />} />
@@ -23,6 +24,7 @@ function App() {
 				<Route path="/register" element={<Register />} />
 				<Route path="/user/:username" element={<UserPage />} />
 				<Route path="/restaurant/:username" element={<Restaurant />} />
+				<Route path="/plates" element={<Plates />} />
 				<Route path="*" element={<NotFound />} />
 			</Routes>
 		</BrowserRouter>
