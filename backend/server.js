@@ -180,6 +180,132 @@ app.get("/api/user/:username", async (req, res) => {
 	}
 });
 
+// Get all items for a restaurant
+app.get("/api/restaurant/items", async (req, res) => {
+  const { username } = req.query;
+
+  if (!username) {
+    return res.status(400).json({ message: "Restaurant username is required" });
+  }
+
+  try {
+    const query = `
+      SELECT
+        p.pid,
+        p.description,
+        p.price,
+        p.quantity AS total_quantity,
+        COUNT(s.sell_id) AS total_sold,
+        (p.quantity - COUNT(s.sell_id)) AS quantity_available,
+        p.start_time,
+        p.end_time
+      FROM plate p
+      LEFT JOIN sell s ON p.pid = s.plate_id
+      WHERE p.username = $1
+      GROUP BY p.pid, p.description, p.price, p.quantity, p.start_time, p.end_time
+      ORDER BY p.pid;
+    `;
+
+    const result = await pool.query(query, [username]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error("API ERROR /api/restaurant/items:", err);
+    res.status(500).json({ message: "Error fetching restaurant items" });
+  }
+});
+
+// Add a new plate
+app.post("/api/restaurant/items", async (req, res) => {
+  const username = req.query.username;
+  const { description, price, quantity, start_time, end_time } = req.body;
+
+  if (!username || !description || !price || !quantity || !start_time || !end_time) {
+    return res.status(400).json({ message: "Missing required fields." });
+  }
+
+  try {
+    await pool.query("BEGIN");
+
+    const plateResult = await pool.query(
+      `INSERT INTO plate (username, price, quantity, description, start_time, end_time)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING pid`,
+      [username, price, quantity, description, start_time, end_time]
+    );
+
+    const pid = plateResult.rows[0].pid;
+
+    await pool.query("COMMIT");
+
+    res.json({ message: "Item added successfully", pid });
+  } catch (err) {
+    console.error("ADD ITEM ERROR:", err);
+    await pool.query("ROLLBACK");
+    res.status(500).json({ message: "Error adding restaurant item" });
+  }
+});
+
+// Update an existing plate
+app.put("/api/restaurant/items", async (req, res) => {
+  const username = req.query.username;
+  const { pid, description, price, quantity, start_time, end_time } = req.body;
+
+  if (!username || !pid) {
+    return res.status(400).json({ message: "Username and Plate ID are required." });
+  }
+
+  try {
+    await pool.query("BEGIN");
+
+    await pool.query(
+      `UPDATE plate
+       SET description = COALESCE($1, description),
+           price = COALESCE($2, price),
+           quantity = COALESCE($3, quantity),
+           start_time = COALESCE($4, start_time),
+           end_time = COALESCE($5, end_time)
+       WHERE pid = $6 AND username = $7`,
+      [description, price, quantity, start_time, end_time, pid, username]
+    );
+
+    await pool.query("COMMIT");
+
+    res.json({ message: "Item updated successfully" });
+  } catch (err) {
+    console.error("UPDATE ITEM ERROR:", err);
+    await pool.query("ROLLBACK");
+    res.status(500).json({ message: "Error updating item" });
+  }
+});
+
+// Delete a plate
+app.delete("/api/restaurant/items/:pid", async (req, res) => {
+  const username = req.query.username;
+  const { pid } = req.params;
+
+  if (!username || !pid) {
+    return res.status(400).json({ message: "Username and Plate ID are required." });
+  }
+
+  try {
+    await pool.query("BEGIN");
+
+    // Remove all sell entries for this plate
+    await pool.query(`DELETE FROM sell WHERE plate_id = $1`, [pid]);
+
+    // Delete the plate itself
+    await pool.query(`DELETE FROM plate WHERE pid = $1 AND username = $2`, [pid, username]);
+
+    await pool.query("COMMIT");
+
+    res.json({ message: "Item deleted successfully" });
+  } catch (err) {
+    console.error("DELETE ITEM ERROR:", err);
+    await pool.query("ROLLBACK");
+    res.status(500).json({ message: "Error deleting item" });
+  }
+});
+
 
 app.post("/api/member_lookup", async (req, res) => {
 	const { name } = req.body;
