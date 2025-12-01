@@ -1,9 +1,14 @@
 import express from "express";
-const path = "/workspaces/DBS-Group-Project/";
+//const path = "/workspaces/DBS-Group-Project/";
 import dotenv from "dotenv";
 import cors from "cors";
 import pkg from "pg";
 import cookieParser from "cookie-parser";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 const { Pool } = pkg;
@@ -11,6 +16,7 @@ const { Pool } = pkg;
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 // Create database pool
 const pool = new Pool({
@@ -19,7 +25,7 @@ const pool = new Pool({
 
 // Test route
 app.get("/", (req, res) => {
-	res.sendFile(path + "/frontend/index.html");
+	res.json({ status: "ok", message: "API is running..." });
 });
 
 function requireAdmin(req, res, next) {
@@ -71,7 +77,7 @@ app.post("/api/admin_login", async (req, res) => {
 			return res.status(401).json({ message: "Invalid credentials" });
 		}
 
-		res.cookie("adminUser", username, {
+		res.cookie("adminUser", result.rows[0].name, {
 			httpOnly: true,
 			sameSite: "Strict",
 			secure: false,
@@ -251,7 +257,7 @@ app.get("/api/user/:username", async (req, res) => {
 	}
 });
 
-app.post("/api/member_lookup", async (req, res) => {
+app.post("/api/member_lookup", requireAdmin, async (req, res) => {
 	const { name } = req.body;
 	try {
 		const query = `
@@ -272,7 +278,7 @@ app.post("/api/member_lookup", async (req, res) => {
 	}
 });
 
-app.post("/api/restaurant_report", async (req, res) => {
+app.post("/api/restaurant_report", requireAdmin, async (req, res) => {
 	const { name, year } = req.body;
 
 	console.log("restaurant report request:", req.body);
@@ -309,7 +315,7 @@ app.post("/api/restaurant_report", async (req, res) => {
 	}
 });
 
-app.post("/api/buyer_report", async (req, res) => {
+app.post("/api/buyer_report", requireAdmin, async (req, res) => {
 	const { name, year } = req.body;
 
 	try {
@@ -347,7 +353,7 @@ app.post("/api/buyer_report", async (req, res) => {
 	}
 });
 
-app.post("/api/needy_report", async (req, res) => {
+app.post("/api/needy_report", requireAdmin, async (req, res) => {
 	const { name, year } = req.body;
 
 	try {
@@ -385,7 +391,7 @@ app.post("/api/needy_report", async (req, res) => {
 	}
 });
 
-app.post("/api/doner_report", async (req, res) => {
+app.post("/api/doner_report", requireAdmin, async (req, res) => {
 	const { name, year } = req.body;
 
 	try {
