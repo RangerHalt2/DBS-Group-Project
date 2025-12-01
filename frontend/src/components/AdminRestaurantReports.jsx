@@ -104,6 +104,7 @@ export default function AdminRestaurantReports() {
 							<th className="p-5">Total Offered</th>
 							<th className="p-5">Total Sold</th>
 							<th className="p-5">Total Unsold</th>
+							<th className="p-5">Total Expired</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -115,6 +116,7 @@ export default function AdminRestaurantReports() {
 								<td>{plate.total_offered}</td>
 								<td>{plate.total_sold}</td>
 								<td>{plate.total_unsold}</td>
+								<td>{plate.count_expired}</td>
 							</tr>
 						))}
 					</tbody>
