@@ -2,6 +2,7 @@ import AdminRestaurantReports from "../components/AdminRestaurantReports";
 import AdminCustomerReport from "../components/AdminCustomerReport";
 import AdminDonerReport from "../components/AdminDonerReport";
 import AdminNeedyReport from "../components/AdminNeedyReport";
+import AdminMemberLookUp from "../components/AdminMemberLookUp";
 import { useState, useEffect } from "react";
 
 export const AdminHub = () => {
@@ -41,7 +42,10 @@ export const AdminHub = () => {
 			>
 				<div className="">
 					{/* Admin Logged In information*/}
-					<h2>Welcome Admin: {adminName}</h2>
+					<h2 className="text-xl font-bold">Welcome Admin: {adminName}</h2>
+				</div>
+				<div className="mt-10">
+					<AdminMemberLookUp />
 				</div>
 				<button className="mt-auto bg-gray-200 rounded px-3 py-1">
 					<a href="/adminRegister" className="text-blue-500">
@@ -52,7 +56,9 @@ export const AdminHub = () => {
 			<main className="flex-1 p-5">
 				{/* Links to generate reports will be here*/}
 				<div className="m-5">
-					<h1 className="">Which report would you like to generate?</h1>
+					<h1 className="text-xl font-bold">
+						Which report would you like to generate?
+					</h1>
 					<button
 						onClick={() => setActiveReport("restaurant")}
 						className={`px-3 py-1 rounded ${

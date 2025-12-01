@@ -40,7 +40,7 @@ export default function AdminCustomerReport() {
 
 	return (
 		<div>
-			<h2 className="text-lg font-bold text-gray-700">
+			<h2 className="text-lg font-semibold text-gray-700">
 				Generate Customer Report
 			</h2>
 

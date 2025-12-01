@@ -40,7 +40,9 @@ export default function AdminNeedyReport() {
 
 	return (
 		<div>
-			<h2 className="text-lg font-bold text-gray-700">Generate Needy Report</h2>
+			<h2 className="text-lg font-semibold text-gray-700">
+				Generate Needy Report
+			</h2>
 
 			<div className="">
 				<input
