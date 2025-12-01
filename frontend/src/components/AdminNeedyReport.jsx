@@ -11,6 +11,10 @@ export default function AdminNeedyReport() {
 	const [error, setError] = useState(null);
 
 	const fetchReport = async () => {
+		if (!name && !year) {
+			setError("Please provide at least a needy name and year.");
+			return;
+		}
 		setReport(null);
 		setLoading(true);
 		setError(null);

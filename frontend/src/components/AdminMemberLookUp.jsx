@@ -16,6 +16,9 @@ export default function AdminMemberLookUp() {
 				value={name}
 				onChange={(e) => setUsername(e.target.value)}
 			/>
+			<button className="bg-gray-500 text-white px-3 py-1 rounded ml-2">
+				Search
+			</button>
 		</div>
 	);
 }

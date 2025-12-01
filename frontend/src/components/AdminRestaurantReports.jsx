@@ -11,6 +11,11 @@ export default function AdminRestaurantReports() {
 	const [error, setError] = useState(null);
 
 	const fetchReport = async () => {
+		if (!restaurant && !year) {
+			setError("Please provide at least a restaurant name and year.");
+			return;
+		}
+
 		setReport(null);
 		setLoading(true);
 		setError(null);
