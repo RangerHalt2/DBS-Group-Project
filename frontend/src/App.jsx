@@ -22,7 +22,7 @@ function App() {
 				<Route path="/AdminHub" element={<AdminHub />} />
 				<Route path="/register" element={<Register />} />
 				<Route path="/user/:username" element={<UserPage />} />
-				<Route path="/restaurant" element={<Restaurant />} />
+				<Route path="/restaurant/:username" element={<Restaurant />} />
 				<Route path="*" element={<NotFound />} />
 			</Routes>
 		</BrowserRouter>
