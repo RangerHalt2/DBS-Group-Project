@@ -20,12 +20,14 @@ const Navbar = () => {
 					</li>
 					<li><h1>|</h1></li>
 					<li>
+						<a href="/adminLogin">Admin Login</a>
+					</li>
+					<li><h1>|</h1></li>
+					<li>
 						<a href="/plates">Available Plates</a>
 					</li>
+
 				</ul>
-			</div>
-			<div className="navbar-right">
-				<a href="/adminLogin">Admin Login</a>
 			</div>
 			<div className="navbar-right">
 				<a href="/user/:username">Account</a>

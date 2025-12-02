@@ -33,32 +33,58 @@ export default function UserPage() {
     setIsEditing(false); // exit editing mode
   }
 
-	// Save updated user info
-	async function handleSave(e) {
-		e.preventDefault();
-		try {
-			const res = await fetch(`http://localhost:3001/api/user/${username}`, {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					name: form.name,
-					password: form.password,
-					address: form.address,
-					phone_number: form.phone_number,
-					cardName: form.cardName,
-					cardNumber: form.cardNumber,
-				}),
-			});
-			const data = await res.json();
-			alert(data.message);
+  // Save updated user info
+  async function handleSave(e) {
+    e.preventDefault();
 
-			setIsEditing(false);
-			setUser(form); // update frontend
-		} catch (err) {
-			console.error(err);
-			alert("Error updating user.");
-		}
-	}
+    // VALIDATION
+    const errorMsg = validateForm();
+    if (errorMsg) return alert(errorMsg);
+
+    try {
+      const res = await fetch(`http://localhost:3001/api/user/${username}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          password: form.password,
+          address: form.address,
+          phone_number: form.phone_number,
+          cardName: form.cardName,
+          cardNumber: form.cardNumber,
+        }),
+      });
+      const data = await res.json();
+      alert(data.message);
+
+      setIsEditing(false);
+      setUser(form); // update frontend
+    } catch (err) {
+      console.error(err);
+      alert("Error updating user.");
+    }
+  }
+
+  // Form validation
+  function validateForm() {
+    if (!form.name || !form.password || !form.address) {
+      return "Name, password, and address are required.";
+    }
+
+    if (form.password.length < 8) return "Password must be at least 8 characters long.";
+
+    if (form.phone_number && !/^\d{10}$/.test(form.phone_number)) {
+      return "Phone number must be exactly 10 digits.";
+    }
+
+    if (showCardInfo) {
+      if (!form.cardName || !form.cardNumber) return "Card name and number are required.";
+      if (!/^\d{15,19}$/.test(form.cardNumber)) return "Card number must be 15-19 digits long.";
+    }
+
+    return "";
+  }
+
 
 	// Delete user
 	async function handleDelete() {

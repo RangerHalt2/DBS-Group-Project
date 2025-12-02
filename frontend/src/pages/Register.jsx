@@ -27,7 +27,6 @@ export default function Register() {
 		setForm({ ...form, [e.target.placeholder]: e.target.value });
 	};
 
-	//validation
 	const validateForm = () => {
 		if (!role) return "Please select a role.";
 
@@ -36,21 +35,30 @@ export default function Register() {
 			return "Please fill in all required fields.";
 		}
 
-		// Phone required EXCEPT needy
+		// Password length
+		if (form.password.length < 8) return "Password must be at least 8 characters long.";
+
+		// Phone required EXCEPT Needy
 		if (role !== "Needy" && !form.phone) {
 			return "Phone number is required for this role.";
 		}
 
+		// Phone format check
+		if (form.phone && !/^\d{10}$/.test(form.phone)) {
+			return "Phone number must be exactly 10 digits.";
+		}
+
 		// Credit card required only for Customer + Doner
-		if (
-			(role === "Customer" || role === "Doner") &&
-			(!form.cardName || !form.cardNumber)
-		) {
-			return "Credit card information is required for this role.";
+		if (role === "Customer" || role === "Doner") {
+			if (!form.cardName || !form.cardNumber) return "Credit card information is required.";
+			if (!/^\d{15,19}$/.test(form.cardNumber)) {
+				return "Card number must be 15-19 digits long.";
+			}
 		}
 
 		return "";
 	};
+
 
 	// submit
 	const handleSubmit = async (e) => {
@@ -68,8 +76,9 @@ export default function Register() {
 
 		if (!res.ok) return setError(data.error);
 
-		//change navigation according to page of type of member
-		navigate("/userpage");
+		const userName = (data.username || form.username);
+
+		navigate(`/user/${userName}`);
 	};
 
 	return (

@@ -255,7 +255,7 @@ app.post("/api/register", async (req, res) => {
 
 		await pool.query("COMMIT");
 
-		res.json({ success: true, message: "Registration successful." });
+		res.json({ success: true, message: "Registration successful.", username: username });
 	} catch (err) {
 		console.error("Error:", err);
 		res.status(500).json({ message: "Database error." });
