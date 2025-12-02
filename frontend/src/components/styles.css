@@ -1,340 +1,347 @@
+@import "tailwindcss";
+
 :root {
-    --green-dark: #04382e;
-    --green-medium: #98c8ae;
-    --green-mid: #b0d9c4;
-    --green-light: #F1F8E8;
+	--green-dark: #04382e;
+	--green-medium: #98c8ae;
+	--green-mid: #b0d9c4;
+	--green-light: #f1f8e8;
 }
 
-.bg{
-    background-color: var(--green-mid);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.bg {
+	background-color: var(--green-mid);
+	min-height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 /* Login Page */
-.login-card{
-    background-color: var(--green-light);
-    text-align: center;
-    padding: 2.5rem 2.7rem;
-    border-radius: 18px;
-    width: 360px;
-    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.12);
+.login-card {
+	background-color: var(--green-light);
+	text-align: center;
+	padding: 2.5rem 2.7rem;
+	border-radius: 18px;
+	width: 360px;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.12);
 }
 
-.login-title{
-    color: var(--green-dark);
-    font-size: 2rem;
-    margin-bottom: 0.3rem;
+.login-title {
+	color: var(--green-dark);
+	font-size: 2rem;
+	margin-bottom: 0.3rem;
 }
 
-.login-input{
-    width: 100%;
-    padding: 12px 14px;
-    margin-bottom: 1rem;
-    border: 2px solid var(--green-mid);
-    border-radius: 25px;
-    outline: none;
+.login-input {
+	width: 100%;
+	padding: 12px 14px;
+	margin-bottom: 1rem;
+	border: 2px solid var(--green-mid);
+	border-radius: 25px;
+	outline: none;
 }
 
-.login-input:focus{
-    border-color: var(--green-mid);
-    box-shadow: 0 0 0 5px rgba(149, 210, 179, 0.25);
+.login-input:focus {
+	border-color: var(--green-mid);
+	box-shadow: 0 0 0 5px rgba(149, 210, 179, 0.25);
 }
 
-.login-button{
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 25px;
-    background-color: var(--green-mid);
-    margin-bottom: 1rem;
+.login-button {
+	width: 100%;
+	padding: 12px 14px;
+	border-radius: 25px;
+	background-color: var(--green-mid);
+	margin-bottom: 1rem;
 }
 
-.login-button:hover{
-    background-color: var(--green-medium);
+.login-button:hover {
+	background-color: var(--green-medium);
 }
 
-.sign-up-button{
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 25px;
-    border: 2px solid var(--green-light);
+.sign-up-button {
+	width: 100%;
+	padding: 12px 14px;
+	border-radius: 25px;
+	border: 2px solid var(--green-light);
 }
 
-.sign-up-button:hover{
-    background-color: var(--green-dark);
-    color: white;
+.sign-up-button:hover {
+	background-color: var(--green-dark);
+	color: white;
 }
 
 /* Register Page */
 
 .register-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 35px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 35px;
 }
 
 .role-buttons {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 1rem;
+	display: flex;
+	gap: 15px;
+	justify-content: center;
+	flex-wrap: wrap;
+	margin-top: 1rem;
 }
 
 .row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 15px;
-    margin-bottom: 1.1rem;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 15px;
+	margin-bottom: 1.1rem;
 }
 
 /* Role buttons same style as login-button but smaller width */
 .role-buttons .login-button {
-    width: auto;
-    min-width: 130px;
-    padding: 10px 20px;
+	width: auto;
+	min-width: 130px;
+	padding: 10px 20px;
 }
 
 .submit-btn {
-    width: 100%;
-    margin-top: 10px;
+	width: 100%;
+	margin-top: 10px;
 }
 
 .active-role {
-    background-color: var(--green-dark) !important;
-    color: white !important;
-    transform: scale(1.05);
+	background-color: var(--green-dark) !important;
+	color: white !important;
+	transform: scale(1.05);
 }
-
 
 /* User Page */
 
 .profile-form {
-    width: 90%;
-    max-width: 900px;
-    margin: 0 auto;
+	width: 90%;
+	max-width: 900px;
+	margin: 0 auto;
 }
 
-.field{
-    font-size: large;
-    align-content: space space-around;
+.field {
+	font-size: large;
+	align-content: space space-around;
 }
 
 .floating-button {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
+	position: fixed;
+	bottom: 30px;
+	right: 30px;
+	width: 70px;
+	height: 70px;
+	border-radius: 50%;
 
-    background-color: var(--green-dark);
-    color: white;
-    border: none;
-    font-size: 1rem;
+	background-color: var(--green-dark);
+	color: white;
+	border: none;
+	font-size: 1rem;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+	cursor: pointer;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .floating-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+	transform: scale(1.1);
+	box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
 }
 
 /* Navbar */
 
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: var(--green-dark);
-  color: #fff;
-  padding: 1rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: var(--green-dark);
+	color: #fff;
+	padding: 1rem;
 }
 
 .navbar-left .logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #fff;
-  text-decoration: none;
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: #fff;
+	text-decoration: none;
 }
 
 .navbar-center .nav-links {
-  list-style-type: none;
-  display: flex;
-  margin: 0;
-  padding: 0;
+	list-style-type: none;
+	display: flex;
+	margin: 0;
+	padding: 0;
 }
 
 .navbar-center .nav-links li {
-  margin-right: 1rem;
+	margin-right: 1rem;
 }
 
 .navbar-center .nav-links a {
-  color: #fff;
-  text-decoration: none;
+	color: #fff;
+	text-decoration: none;
 }
 
 .navbar-right {
-  display: flex;
-  align-items: center;
+	display: flex;
+	align-items: center;
 }
 
 .navbar-right .cart-icon,
 .navbar-right .user-icon {
-  color: #fff;
-  text-decoration: none;
-  margin-left: 1rem;
-  position: relative;
+	color: #fff;
+	text-decoration: none;
+	margin-left: 1rem;
+	position: relative;
 }
 
 .navbar-right .cart-count {
-  background-color: #f44336;
-  color: #fff;
-  border-radius: 50%;
-  padding: 0.2rem 0.5rem;
-  font-size: 0.8rem;
-  position: absolute;
-  top: -0.5rem;
-  right: -0.5rem;
+	background-color: #f44336;
+	color: #fff;
+	border-radius: 50%;
+	padding: 0.2rem 0.5rem;
+	font-size: 0.8rem;
+	position: absolute;
+	top: -0.5rem;
+	right: -0.5rem;
 }
 
 /* Restaurant Page */
 
 .inventory-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.5rem;
-    width: 90%;
-    max-width: 1100px;
-    margin: 2rem auto;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 1.5rem;
+	width: 90%;
+	max-width: 1100px;
+	margin: 2rem auto;
 }
 
 .inventory-card {
-    background-color: var(--green-light);
-    border-radius: 18px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+	background-color: var(--green-light);
+	border-radius: 18px;
+	padding: 1.5rem;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	cursor: pointer;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .inventory-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+	transform: translateY(-5px);
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .inventory-card h3 {
-    margin: 0 0 0.5rem 0;
-    color: var(--green-dark);
+	margin: 0 0 0.5rem 0;
+	color: var(--green-dark);
 }
 
 .inventory-card p {
-    margin: 0.3rem 0;
-    color: #555;
+	margin: 0.3rem 0;
+	color: #555;
 }
 
 /* Popup Overlay */
 .popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    padding: 1rem;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.6);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+	padding: 1rem;
 }
 
 /* Popup Card */
 .popup-card {
-    background-color: var(--green-light);
-    padding: 2rem;
-    border-radius: 18px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-    animation: popupFade 0.3s ease-out;
+	background-color: var(--green-light);
+	padding: 2rem;
+	border-radius: 18px;
+	width: 100%;
+	max-width: 400px;
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+	animation: popupFade 0.3s ease-out;
 }
 
 @keyframes popupFade {
-    from { transform: scale(0.9); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+	from {
+		transform: scale(0.9);
+		opacity: 0;
+	}
+	to {
+		transform: scale(1);
+		opacity: 1;
+	}
 }
 
 .popup-card h2 {
-    margin-top: 0;
-    color: var(--green-dark);
+	margin-top: 0;
+	color: var(--green-dark);
 }
 
 .popup-card p {
-    margin: 0.4rem 0;
-    color: #555;
+	margin: 0.4rem 0;
+	color: #555;
 }
 
 /* Reuse login button style for popup */
 .popup-card .login-button {
-    width: 100%;
-    margin-top: 1rem;
+	width: 100%;
+	margin-top: 1rem;
 }
 
 /* Home page */
 .home-bg {
-    background-color: var(--green-mid);
-    min-height: 100vh;
-    justify-content: center;
-    align-content: center;
+	background-color: var(--green-mid);
+	min-height: 100vh;
+	justify-content: center;
+	align-content: center;
 }
 
 .hline {
-    border-color: var(--green-dark);
-    max-width: 25%;
-    margin: auto;
-    height: 3vh;
+	border-color: var(--green-dark);
+	max-width: 25%;
+	margin: auto;
+	height: 3vh;
 }
 
 .paragraph {
-    max-width: 30%;
-    margin: auto;
+	max-width: 30%;
+	margin: auto;
 }
 
 .image {
-    height: 10vh;
-    width: auto;
+	height: 10vh;
+	width: auto;
 }
 
 /* Plates page */
 
 table {
-    margin: auto;
+	margin: auto;
 }
 
 td {
-    padding: 1vh;
-    border-color: var(--green-dark);
-    border-width: .1vh;
+	padding: 1vh;
+	border-color: var(--green-dark);
+	border-width: 0.1vh;
 }
 
 button {
-    width: 10vh;
-    height: 4vh;
-    background-color: var(--green-dark);
-    padding: 2vh;
-    margin: 1vh;
-    display:inline-flex;
-    justify-content: center;
-    align-items: center;
-    color: #fff;
+	width: 10vh;
+	height: 4vh;
+	background-color: var(--green-dark);
+	padding: 2vh;
+	margin: 1vh;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	color: #fff;
 }
