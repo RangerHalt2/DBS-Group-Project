@@ -8,6 +8,7 @@ export default function UserPage() {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
 	const [form, setForm] = useState({});
+  const [plates, setPlates] = useState();
 
 	useEffect(() => {
 		async function fetchUser() {
@@ -16,7 +17,19 @@ export default function UserPage() {
 			setUser(data);
       setForm(data); // store editable copy
 		}
+
+    async function fetchPlates() {
+			const res = await fetch(`http://localhost:3001/api/user/pickup`, {
+        method: "POST",
+        body: JSON.stringify({ username: '${username}' }),
+      });
+
+			const data = await res.json();
+			setPlates(data);
+		}
+
 		fetchUser();
+    fetchPlates();
 	}, [username]);
 
 	if (!user) return <p>Loading...</p>;
@@ -235,7 +248,20 @@ export default function UserPage() {
         </div>
 
 			</form>
-
+        <div className="profile-form login-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Future Pickup Times</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{plates}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 		</div>
 	);
 }

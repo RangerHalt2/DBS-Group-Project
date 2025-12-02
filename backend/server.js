@@ -71,6 +71,27 @@ app.post("/api/user/me", (req, res) => {
 	return res.status(200).json({ user_type: userType });
 });
 
+app.post("/api/user/pickup", async (req, res) => {
+	
+	const { username } = req.body;
+
+	try {
+		const query = `
+            SELECT r.pick_up_time
+			FROM reserve r
+			WHERE r.member_username = ${username}
+			AND r.pick_up_time < NOW()
+        `;
+
+		const result = await pool.query(query);
+
+		res.status(200).json(result.rows);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "Server error" });
+	}
+});
+
 // Example login endpoint
 app.post("/api/login", async (req, res) => {
 	const { username, password } = req.body;
