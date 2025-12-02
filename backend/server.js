@@ -45,6 +45,12 @@ function requireAdmin(req, res, next) {
 	next();
 }
 
+function determineUserType(isBuyer, isNeedy, isRestaurant) {
+	if (isBuyer) return "buyer";
+	if (isNeedy) return "needy";
+	if (isRestaurant) return "restaurant";
+}
+
 app.post("/api/admin/me", (req, res) => {
 	const adminUser = req.cookies.adminUser;
 	if (!adminUser) {
@@ -61,8 +67,23 @@ app.post("/api/login", async (req, res) => {
 
 	try {
 		const query = `
-            SELECT * FROM member 
-            WHERE username = $1 AND password = $2;
+            SELECT 
+                m.username,
+                m.password,
+                m.name,
+                m.address,
+                m.phone_number,
+
+                (b.username IS NOT NULL) AS is_buyer,
+                (n.username IS NOT NULL) AS is_needy,
+                (r.username IS NOT NULL) AS is_restaurant
+
+            FROM member m
+            LEFT JOIN buyer b ON b.username = m.username
+            LEFT JOIN needy n ON n.username = m.username
+            LEFT JOIN restaurant r ON r.username = m.username
+
+            WHERE m.username = $1 AND m.password = $2;
         `;
 
 		const result = await pool.query(query, [username, password]);
@@ -70,6 +91,21 @@ app.post("/api/login", async (req, res) => {
 		if (result.rows.length === 0) {
 			return res.status(401).json({ message: "Invalid credentials" });
 		}
+
+		res.cookie(
+			"user_type",
+			determineUserType(
+				result.rows[0].is_buyer,
+				result.rows[0].is_needy,
+				result.rows[0].is_restaurant
+			),
+			{
+				httpOnly: true,
+				sameSite: "Lax",
+				secure: false,
+				path: "/",
+			}
+		);
 
 		return res.json({ message: "Login successful", user: result.rows[0] });
 	} catch (err) {
@@ -277,7 +313,8 @@ app.get("/api/user/:username", async (req, res) => {
 // Edit a user
 app.put("/api/user/:username", async (req, res) => {
 	const username = req.params.username;
-	const { name, password, address, phone_number, cardName, cardNumber } = req.body;
+	const { name, password, address, phone_number, cardName, cardNumber } =
+		req.body;
 
 	try {
 		await pool.query("BEGIN");
@@ -321,40 +358,21 @@ app.delete("/api/user/:username", async (req, res) => {
 	try {
 		await pool.query("BEGIN");
 
-		await pool.query(
-			`DELETE FROM doner WHERE username = $1`,
-			[username]
-		);
+		await pool.query(`DELETE FROM doner WHERE username = $1`, [username]);
 
-		await pool.query(
-			`DELETE FROM customer WHERE username = $1`,
-			[username]
-		);
-		
-		await pool.query(
-			`DELETE FROM buyer WHERE username = $1`,
-			[username]
-		);
+		await pool.query(`DELETE FROM customer WHERE username = $1`, [username]);
 
-		await pool.query(
-			`DELETE FROM needy WHERE username = $1`,
-			[username]
-		);
+		await pool.query(`DELETE FROM buyer WHERE username = $1`, [username]);
 
-		await pool.query(
-			`DELETE FROM restaurant WHERE username = $1`,
-			[username]
-		);
+		await pool.query(`DELETE FROM needy WHERE username = $1`, [username]);
 
-		await pool.query(
-			`DELETE FROM reserve WHERE member_username = $1`,
-			[username]
-		);
+		await pool.query(`DELETE FROM restaurant WHERE username = $1`, [username]);
 
-		await pool.query(
-			`DELETE FROM member WHERE username = $1`,
-			[username]
-		);
+		await pool.query(`DELETE FROM reserve WHERE member_username = $1`, [
+			username,
+		]);
+
+		await pool.query(`DELETE FROM member WHERE username = $1`, [username]);
 
 		await pool.query("COMMIT");
 
@@ -710,7 +728,6 @@ app.get("/api/buyplates", async (req, res) => {
 			message: "List of plates generated",
 			report: result.rows,
 		});
-
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ message: "Server error" });
