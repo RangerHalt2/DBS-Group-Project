@@ -64,15 +64,31 @@ export default function AdminMemberLookUp() {
 
 			{member && (
 				<div className="text-center bg-lime-50">
-					<p>Username: {member.username}</p>
-					<p>Password: {member.password}</p>
-					<p>Name: {member.name}</p>
-					<p>Address: {member.address}</p>
-					<p>Phone: {member.phone_number}</p>
+					<p>
+						<span className="font-semibold">Username:</span> {member.username}
+					</p>
+					<p>
+						<span className="font-semibold">Password:</span> {member.password}
+					</p>
+					<p>
+						<span className="font-semibold">Name:</span> {member.name}
+					</p>
+					<p>
+						<span className="font-semibold">Address:</span> {member.address}
+					</p>
+					<p>
+						<span className="font-semibold">Phone:</span> {member.phone_number}
+					</p>
 					{member.buyer_info && (
 						<div>
-							<p>Card Number: {member.buyer_info.card_number}</p>
-							<p>Card Name: {member.buyer_info.cardholder_name}</p>
+							<p>
+								<span className="font-semibold">Card Number:</span>{" "}
+								{member.buyer_info.card_number}
+							</p>
+							<p>
+								<span className="font-semibold">Card Name:</span>{" "}
+								{member.buyer_info.cardholder_name}
+							</p>
 						</div>
 					)}
 					{member.reservations && member.reservations.length > 0 && (
