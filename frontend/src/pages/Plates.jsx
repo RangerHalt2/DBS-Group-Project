@@ -25,7 +25,7 @@ export default function Plates() {
 	}, [sortBy]);
 
 	return (
-		<div className="home-bg md:pt-24">
+		<div className="home-bg p-0 [@media(max-width:1920px)]:p-24">
 			<div className="profile-form login-card">
 				<button
 					onClick={() => setSortBy("quantity")}
