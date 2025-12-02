@@ -61,6 +61,16 @@ app.post("/api/admin/me", (req, res) => {
 	return res.status(200).json({ name: adminUser });
 });
 
+app.post("/api/user/me", (req, res) => {
+	const userType = req.cookies.user_type;
+	if (!userType) {
+		return res.status(401).json({ message: "No User Type" });
+	}
+
+	// Return whatever info you want, e.g., name
+	return res.status(200).json({ user_type: userType });
+});
+
 // Example login endpoint
 app.post("/api/login", async (req, res) => {
 	const { username, password } = req.body;
