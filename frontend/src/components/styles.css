@@ -320,23 +320,36 @@
 /* Plates page */
 
 .platetable {
+    border-collapse:separate;
     margin: auto;
+    border-spacing: 2vh;
 }
 
 .platetd {
-    padding: 1vh;
+    padding: 1vh 3vh;
     border-color: var(--green-dark);
     border-width: .1vh;
+    border-radius: 20px;
+}
+
+.platedes {
+    width: 75%;
+	padding: 12px 14px;
+	margin-bottom: 5rem;
+	border-color: var(--green-dark);
+    border-width: .1vh;
+	border-radius: 20px;
+	outline: none;
 }
 
 .sortButton {
-    width: 10vh;
-    height: 4vh;
-    background-color: var(--green-dark);
-    padding: 2vh;
+    width: 20%;
+	padding: 12px 14px;
+	border-radius: 25px;
     margin: 1vh;
-    display:inline-flex;
+	background-color: var(--green-mid);
+	margin-bottom: 1rem;
+    display: inline-flex;
     justify-content: center;
     align-items: center;
-    color: #fff;
 }
