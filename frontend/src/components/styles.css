@@ -307,14 +307,21 @@
 
 .hline {
 	border-color: var(--green-dark);
-	max-width: 25%;
+	max-width: 65%;
 	margin: auto;
 	height: 3vh;
 }
 
 .paragraph {
-	max-width: 30%;
+	max-width: 80%;
 	margin: auto;
+    font-size:larger;
+    color: var(--green-dark);
+}
+
+.title {
+    font-size: xxx-large;
+    color: var(--green-dark);
 }
 
 /* Plates page */
