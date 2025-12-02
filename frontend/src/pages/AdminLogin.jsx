@@ -67,14 +67,6 @@ export default function AdminLogin() {
 				<button type="submit" className="login-button">
 					Login
 				</button>
-
-				<button
-					type="submit"
-					className="sign-up-button"
-					onClick={() => navigate("/AdminRegister")}
-				>
-					Click here to sign up!
-				</button>
 			</form>
 		</div>
 	);
