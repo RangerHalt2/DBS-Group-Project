@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/styles.css";
 
@@ -11,6 +11,30 @@ export default function AdminRegister() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState(null);
+
+	useEffect(() => {
+		const fetchAdmin = async () => {
+			try {
+				const res = await fetch("http://localhost:3001/api/admin/me", {
+					method: "POST",
+					credentials: "include", // important to send cookies
+				});
+
+				if (res.status === 401) {
+					// Not authorized → redirect to index
+					window.location.href = "/";
+					return;
+				}
+
+				const data = await res.json();
+			} catch (err) {
+				console.error("Error fetching admin info:", err);
+				window.location.href = "/";
+			}
+		};
+
+		fetchAdmin();
+	}, []);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
