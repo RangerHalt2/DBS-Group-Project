@@ -44,12 +44,6 @@ function Navbar() {
 					<li>
 						<a href="/plates">Available Plates</a>
 					</li>
-					<li>
-						<h1>|</h1>
-					</li>
-					<li>
-						<a href="restaurant/:username">Restaurant Inverntory</a>
-					</li>
 				</ul>
 			</div>
 			<div className="navbar-right">
