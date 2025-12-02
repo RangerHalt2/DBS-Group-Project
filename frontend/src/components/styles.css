@@ -290,6 +290,7 @@
     margin-top: 1rem;
 }
 
+/* Home page */
 .home-bg {
     background-color: var(--green-mid);
     min-height: 100vh;
@@ -312,4 +313,28 @@
 .image {
     height: 10vh;
     width: auto;
+}
+
+/* Plates page */
+
+table {
+    margin: auto;
+}
+
+td {
+    padding: 1vh;
+    border-color: var(--green-dark);
+    border-width: .1vh;
+}
+
+button {
+    width: 10vh;
+    height: 4vh;
+    background-color: var(--green-dark);
+    padding: 2vh;
+    margin: 1vh;
+    display:inline-flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
 }
