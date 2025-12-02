@@ -72,7 +72,6 @@ app.post("/api/user/me", (req, res) => {
 });
 
 app.post("/api/user/pickup", async (req, res) => {
-	
 	const { username } = req.body;
 
 	try {
