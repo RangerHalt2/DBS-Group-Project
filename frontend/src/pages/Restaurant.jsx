@@ -326,7 +326,7 @@ export default function RestaurantPage() {
 				</div>
 			)}
 			<button
-				className="login-button"
+				className="profile-form login-card"
 				onClick={() => navigate(`/user/${username}`)}
 			>
 			Back to User Page
