@@ -29,12 +29,12 @@ export default function Plates() {
 
     return (
         <div className="home-bg">
-            <button onClick={() => setSortBy('quantity')} disabled={sortBy === 'quantity'}>Sort by Quantity</button>
-            <button onClick={() => setSortBy('price')} disabled={sortBy === 'price'}>Sort By Price</button>
+            <button onClick={() => setSortBy('quantity')} disabled={sortBy === 'quantity'} className="sortButton">Sort by Quantity</button>
+            <button onClick={() => setSortBy('price')} disabled={sortBy === 'price'} className="sortButton">Sort By Price</button>
             {plates.length === 0 ? (
                 <p>No plates are currently in stock.</p>
             ) : (
-                <table>
+                <table className="platetable">
                     <thead>
                         <tr>
                             <th>Description</th>
@@ -45,7 +45,7 @@ export default function Plates() {
                     <tbody>
                         {plates.map((plate, index) => (
                             <tr key={index}>
-                                <td>{plate.description}</td>
+                                <td className="platetd">{plate.description}</td>
                                 <td>{plate.quantity}</td>
                                 <td>${plate.price}</td>
                             </tr>
