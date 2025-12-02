@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/styles.css";
+import { AuthContext } from "../components/AuthContext.jsx";
 //imports
 
 export default function Login() {
@@ -8,6 +9,8 @@ export default function Login() {
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState(null);
 	const navigate = useNavigate(); //go to register page or after logging-in
+
+	const { setUserRole } = useContext(AuthContext);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -20,6 +23,7 @@ export default function Login() {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({ username, password }),
+					credentials: "include",
 				});
 				const data = await response.json();
 
@@ -27,9 +31,10 @@ export default function Login() {
 					setError(data.message);
 					return;
 				}
+
 				console.log("Login successful:", data.user);
 				setError(null);
-
+				setUserRole(data.user_type);
 				navigate(`/user/${data.user.username}`); //redirect to userpage
 			} catch (err) {
 				setError("Login failed. Please try again.");

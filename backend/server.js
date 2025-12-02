@@ -122,22 +122,24 @@ app.post("/api/login", async (req, res) => {
 			return res.status(401).json({ message: "Invalid credentials" });
 		}
 
-		res.cookie(
-			"user_type",
-			determineUserType(
-				result.rows[0].is_buyer,
-				result.rows[0].is_needy,
-				result.rows[0].is_restaurant
-			),
-			{
-				httpOnly: true,
-				sameSite: "Lax",
-				secure: false,
-				path: "/",
-			}
+		const userType = determineUserType(
+			result.rows[0].is_buyer,
+			result.rows[0].is_needy,
+			result.rows[0].is_restaurant
 		);
 
-		return res.json({ message: "Login successful", user: result.rows[0] });
+		res.cookie("user_type", userType, {
+			httpOnly: true,
+			sameSite: "lax",
+			secure: false,
+			path: "/",
+		});
+
+		return res.json({
+			message: "Login successful",
+			user: result.rows[0],
+			user_type: userType,
+		});
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ message: "Server error" });
@@ -161,7 +163,7 @@ app.post("/api/admin_login", async (req, res) => {
 
 		res.cookie("adminUser", result.rows[0].name, {
 			httpOnly: true,
-			sameSite: "Lax",
+			sameSite: "lax",
 			secure: false,
 			path: "/",
 		});

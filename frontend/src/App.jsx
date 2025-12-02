@@ -10,23 +10,26 @@ import AdminRegister from "./pages/AdminRegister";
 import { AdminHub } from "./pages/AdminHub";
 import Plates from "./pages/Plates";
 import Navbar from "./Navbar";
+import { AuthContext, AuthProvider } from "./components/AuthContext";
 
 function App() {
 	return (
 		<BrowserRouter>
-			<Navbar />
-			<Routes>
-				<Route path="/" element={<Home />} />
-				<Route path="/login" element={<Login />} />
-				<Route path="/adminLogin" element={<AdminLogin />} />
-				<Route path="/AdminRegister" element={<AdminRegister />} />
-				<Route path="/AdminHub" element={<AdminHub />} />
-				<Route path="/register" element={<Register />} />
-				<Route path="/user/:username" element={<UserPage />} />
-				<Route path="/restaurant/:username" element={<Restaurant />} />
-				<Route path="/plates" element={<Plates />} />
-				<Route path="*" element={<NotFound />} />
-			</Routes>
+			<AuthProvider>
+				<Navbar />
+				<Routes>
+					<Route path="/" element={<Home />} />
+					<Route path="/login" element={<Login />} />
+					<Route path="/adminLogin" element={<AdminLogin />} />
+					<Route path="/AdminRegister" element={<AdminRegister />} />
+					<Route path="/AdminHub" element={<AdminHub />} />
+					<Route path="/register" element={<Register />} />
+					<Route path="/user/:username" element={<UserPage />} />
+					<Route path="/restaurant/:username" element={<Restaurant />} />
+					<Route path="/plates" element={<Plates />} />
+					<Route path="*" element={<NotFound />} />
+				</Routes>
+			</AuthProvider>
 		</BrowserRouter>
 	);
 }
