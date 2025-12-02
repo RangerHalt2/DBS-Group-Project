@@ -1,8 +1,10 @@
+import React from 'react';
+
 export const Home = () => {
+
 	return <div className="home-bg">
 		<h1 className="login-title">Our Mission</h1>
 		<hr className="hline" />
-		<image className="image" src="../public/food-waste.jpg"></image>
 		<p className="paragraph">We here at Waste Not Kitchen™ value the community around us. We want to make sure
 			 nobody has to go a single day without a meal. Additionally, we recognize that every days thousands of
 			 meals in restaurants go to waste at the end of the day. That's why we have made a service where restaurants

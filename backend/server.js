@@ -538,8 +538,26 @@ app.post("/api/member_lookup", requireAdmin, async (req, res) => {
 	const { name } = req.body;
 	try {
 		const query = `
-            SELECT * FROM member 
-            WHERE name = $1;
+            SELECT
+                m.username,
+                m.name,
+                m.address,
+                m.phone_number,
+
+                -- Buyer info
+                b.card_number,
+                b.cardholder_name,
+
+                -- Reservation info
+                r.reserve_id,
+                r.plate_id,
+                r.quantity,
+                r.pick_up_time
+
+            FROM member m
+            LEFT JOIN buyer b ON b.username = m.username
+            LEFT JOIN reserve r ON r.member_username = m.username
+            WHERE m.name = $1;
         `;
 
 		const result = await pool.query(query, [name]);
@@ -548,7 +566,39 @@ app.post("/api/member_lookup", requireAdmin, async (req, res) => {
 			return res.status(404).json({ message: "Member not found" });
 		}
 
-		return res.json({ message: "Member found", member: result.rows });
+		const rows = result.rows;
+
+		// Build clean response structure
+		const base = {
+			username: rows[0].username,
+			name: rows[0].name,
+			address: rows[0].address,
+			phone_number: rows[0].phone_number,
+			buyer_info: null,
+			reservations: [],
+		};
+
+		// Add buyer info if present
+		if (rows[0].card_number) {
+			base.buyer_info = {
+				card_number: rows[0].card_number,
+				cardholder_name: rows[0].cardholder_name,
+			};
+		}
+
+		// Add reservation info (may be many)
+		rows.forEach((r) => {
+			if (r.reserve_id !== null) {
+				base.reservations.push({
+					reserve_id: r.reserve_id,
+					plate_id: r.plate_id,
+					quantity: r.quantity,
+					pick_up_time: r.pick_up_time,
+				});
+			}
+		});
+
+		return res.json({ message: "Member found", member: base });
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ message: "Server error" });
@@ -714,7 +764,7 @@ app.post("/api/doner_report", requireAdmin, async (req, res) => {
 	}
 });
 
-app.get("/api/buyplates", async (req, res) => {
+app.get("/api/buyplates/quantity", async (req, res) => {
 	try {
 		const query = `
             SELECT
@@ -726,18 +776,30 @@ app.get("/api/buyplates", async (req, res) => {
 			ORDER BY p.quantity ASC
         `;
 
-		const result = await pool.query(query, [name, year]);
+		const result = await pool.query(query);
 
-		if (result.rows.length === 0) {
-			return res.status(404).json({
-				message: "No plates available to purchase.",
-			});
-		}
+		res.status(200).json(result.rows);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "Server error" });
+	}
+});
 
-		return res.json({
-			message: "List of plates generated",
-			report: result.rows,
-		});
+app.get("/api/buyplates/price", async (req, res) => {
+	try {
+		const query = `
+            SELECT
+				p.description,
+				p.quantity,
+				p.price
+			FROM plate p
+			WHERE p.quantity > 0
+			ORDER BY p.price ASC
+        `;
+
+		const result = await pool.query(query);
+
+		res.status(200).json(result.rows);
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ message: "Server error" });
