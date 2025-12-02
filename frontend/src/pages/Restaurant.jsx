@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "../components/styles.css";
 
 export default function RestaurantPage() {
 	const { username } = useParams();
+	const navigate = useNavigate();
 	const [items, setItems] = useState([]);
 	const [selectedItem, setSelectedItem] = useState(null);
 	const [error, setError] = useState(null);
@@ -324,6 +325,12 @@ export default function RestaurantPage() {
 					</div>
 				</div>
 			)}
+			<button
+				className="login-button"
+				onClick={() => navigate(`/user/${username}`)}
+			>
+			Back to User Page
+			</button>
 		</div>
 	);
 }

@@ -248,6 +248,14 @@ export default function UserPage() {
         </div>
 
 			</form>
+
+        <button
+          className="login-button"
+          onClick={() => navigate(`/restaurant/${username}`)}
+        >
+          Go to Restaurant Page
+        </button>
+
         <div className="profile-form login-card">
           <table>
             <thead>
