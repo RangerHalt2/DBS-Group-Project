@@ -26,7 +26,6 @@ const Navbar = () => {
 					<li>
 						<a href="/plates">Available Plates</a>
 					</li>
-
 				</ul>
 			</div>
 			<div className="navbar-right">
