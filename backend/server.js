@@ -255,7 +255,11 @@ app.post("/api/register", async (req, res) => {
 
 		await pool.query("COMMIT");
 
-		res.json({ success: true, message: "Registration successful.", username: username });
+		res.json({
+			success: true,
+			message: "Registration successful.",
+			username: username,
+		});
 	} catch (err) {
 		console.error("Error:", err);
 		res.status(500).json({ message: "Database error." });
@@ -540,6 +544,7 @@ app.post("/api/member_lookup", requireAdmin, async (req, res) => {
 		const query = `
             SELECT
                 m.username,
+                m.password,
                 m.name,
                 m.address,
                 m.phone_number,
@@ -571,6 +576,7 @@ app.post("/api/member_lookup", requireAdmin, async (req, res) => {
 		// Build clean response structure
 		const base = {
 			username: rows[0].username,
+			password: rows[0].password,
 			name: rows[0].name,
 			address: rows[0].address,
 			phone_number: rows[0].phone_number,
