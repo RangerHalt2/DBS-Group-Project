@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./components/AuthContext.jsx";
 
 function Navbar() {
-	const { userRole, username, logout } = useContext(AuthContext);
+	const { userRole, username, logout, adminRole } = useContext(AuthContext);
 	const navigate = useNavigate();
 
 	console.log("Navbar - userRole:", userRole, "username:", username); // DEBUG
@@ -43,7 +43,7 @@ function Navbar() {
 							</li>
 						</div>
 					)}
-					{userRole && userRole !== "none" && (
+					{((userRole && userRole !== "none") || adminRole) && (
 						<>
 							<li>
 								<button onClick={handleLogout} className="logout-btn">
@@ -55,7 +55,7 @@ function Navbar() {
 							</li>
 						</>
 					)}
-					{(!userRole || userRole === "none") && (
+					{!adminRole && (
 						<>
 							<li>
 								<a href="/adminLogin">Admin Login</a>

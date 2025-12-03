@@ -900,19 +900,26 @@ app.listen(process.env.PORT, () =>
 
 // LOGOUT USER
 app.post("/api/logout", (req, res) => {
-    res.clearCookie("user_type", {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: false,
-        path: "/",
-    });
+	res.clearCookie("user_type", {
+		httpOnly: true,
+		sameSite: "lax",
+		secure: false,
+		path: "/",
+	});
 
 	res.clearCookie("username", {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: false,
-        path: "/",
-    });
+		httpOnly: true,
+		sameSite: "lax",
+		secure: false,
+		path: "/",
+	});
 
-    return res.json({ message: "Logged out successfully" });
+	res.clearCookie("adminUser", {
+		httpOnly: true,
+		sameSite: "lax",
+		secure: false,
+		path: "/",
+	});
+
+	return res.json({ message: "Logged out successfully" });
 });

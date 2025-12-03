@@ -113,7 +113,7 @@ export default function UserPage() {
 			});
 			const data = await res.json();
 			alert(data.message);
-			
+
 			navigate("/"); // redirect after deletion
 		} catch (err) {
 			console.error(err);

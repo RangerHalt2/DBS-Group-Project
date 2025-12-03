@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/styles.css";
+import { useContext } from "react";
+import { AuthContext } from "../components/AuthContext.jsx";
 
 export default function AdminLogin() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState(null);
 	const navigate = useNavigate(); //go to register page or after logging-in
+
+	const { setAdmin } = useContext(AuthContext);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -29,7 +33,7 @@ export default function AdminLogin() {
 				}
 				console.log("Login successful:", data.user);
 				setError(null);
-
+				setAdmin(data.adminUser);
 				navigate(`/AdminHub`); //redirect to userpage
 			} catch (err) {
 				setError("Login failed. Please try again.");

@@ -5,7 +5,7 @@ export const AuthContext = createContext();
 export function AuthProvider({ children }) {
 	const [userRole, setUserRole] = useState(null);
 	const [username, setUser] = useState(null);
-
+	const [adminRole, setAdmin] = useState(null);
 
 	// Check cookie once when site loads
 	useEffect(() => {
@@ -33,7 +33,27 @@ export function AuthProvider({ children }) {
 			}
 		};
 
+		const fetchAdmin = async () => {
+			try {
+				const res = await fetch("http://localhost:3001/api/admin/me", {
+					method: "POST",
+					credentials: "include", // important to send cookies
+				});
+
+				if (res.status === 401) {
+					// Not authorized → redirect to index
+					return;
+				}
+
+				const data = await res.json();
+				setAdmin(data.name);
+			} catch (err) {
+				console.error("Error fetching admin info:", err);
+			}
+		};
+
 		checkUser();
+		fetchAdmin();
 	}, []);
 
 	// logout
@@ -49,11 +69,22 @@ export function AuthProvider({ children }) {
 
 		// Clear local auth state
 		setUserRole("none");
+		setAdmin(null);
 		setUser(null);
 	};
 
 	return (
-		<AuthContext.Provider value={{ userRole, setUserRole, username, setUser, logout }}>
+		<AuthContext.Provider
+			value={{
+				userRole,
+				setUserRole,
+				username,
+				setUser,
+				logout,
+				adminRole,
+				setAdmin,
+			}}
+		>
 			{children}
 		</AuthContext.Provider>
 	);
