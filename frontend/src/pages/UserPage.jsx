@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { AuthContext } from "../components/AuthContext.jsx";
 import "../components/styles.css";
 
 export default function UserPage() {
@@ -108,10 +109,11 @@ export default function UserPage() {
 		try {
 			const res = await fetch(`http://localhost:3001/api/user/${username}`, {
 				method: "DELETE",
+				credentials: "include",
 			});
 			const data = await res.json();
 			alert(data.message);
-
+			
 			navigate("/"); // redirect after deletion
 		} catch (err) {
 			console.error(err);

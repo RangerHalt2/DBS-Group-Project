@@ -226,6 +226,12 @@ app.post("/api/admin_register", requireAdmin, async (req, res) => {
 	}
 });
 
+function mapRoleToUserType(role) {
+	if (role === "customer" || role === "doner") return "buyer";
+	if (role === "needy") return "needy";
+	return "restaurant"; // anything else defaults to restaurant
+}
+
 app.post("/api/register", async (req, res) => {
 	const {
 		role,
@@ -291,13 +297,38 @@ app.post("/api/register", async (req, res) => {
 
 		await pool.query("COMMIT");
 
+		// Map the role to user_type using helper function
+		const user_type = mapRoleToUserType(role);
+
+		// Set cookies just like login does
+		res.cookie("user_type", user_type, {
+			httpOnly: true,
+			sameSite: "lax",
+			secure: false,
+			path: "/",
+		});
+
+		res.cookie("username", username, {
+			httpOnly: true,
+			sameSite: "lax",
+			secure: false,
+			path: "/",
+		});
+
 		res.json({
 			success: true,
 			message: "Registration successful.",
+			user_type: user_type,
 			username: username,
 		});
 	} catch (err) {
 		console.error("Error:", err);
+
+		if (err.code === "23505") {
+			// unique violation
+			return res.status(400).json({ message: "Username already exists" });
+		}
+
 		res.status(500).json({ message: "Database error." });
 	}
 });
@@ -425,6 +456,20 @@ app.delete("/api/user/:username", async (req, res) => {
 		await pool.query(`DELETE FROM member WHERE username = $1`, [username]);
 
 		await pool.query("COMMIT");
+
+		// *** CLEAR COOKIES HERE ***
+		res.clearCookie("username", {
+			httpOnly: true,
+			sameSite: "lax",
+			secure: false,
+			path: "/",
+		});
+		res.clearCookie("user_type", {
+			httpOnly: true,
+			sameSite: "lax",
+			secure: false,
+			path: "/",
+		});
 
 		res.json({ message: "User deleted successfully" });
 	} catch (err) {

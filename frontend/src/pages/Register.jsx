@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/styles.css";
+import { AuthContext } from "../components/AuthContext.jsx"; 
 
 export default function Register() {
 	const navigate = useNavigate();
+
+	const { setUserRole, setUser } = useContext(AuthContext);
 
 	const [role, setRole] = useState("");
 	const [form, setForm] = useState({
@@ -70,6 +73,7 @@ export default function Register() {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ role: role.toLowerCase(), ...form }),
+			credentials: "include",
 		});
 
 		const data = await res.json();
@@ -77,6 +81,9 @@ export default function Register() {
 		if (!res.ok) return setError(data.error);
 
 		const userName = (data.username || form.username);
+
+		setUserRole(data.user_type);
+		setUser(data.username); // set user
 
 		navigate(`/user/${userName}`);
 	};
