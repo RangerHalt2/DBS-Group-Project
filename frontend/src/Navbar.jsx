@@ -1,10 +1,18 @@
 import React, { useContext } from "react";
 import "./components/styles.css";
-import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./components/AuthContext.jsx";
 
 function Navbar() {
-	const { userRole } = useContext(AuthContext);
+	const { userRole, username, logout } = useContext(AuthContext);
+	const navigate = useNavigate();
+
+	console.log("Navbar - userRole:", userRole, "username:", username); // DEBUG
+
+	const handleLogout = async () => {
+		await logout();
+		navigate("/"); // Redirect to home page after logout
+	};
 
 	return (
 		<nav className="navbar fixed top-0 left-0 w-full bg-white shadow z-50">
@@ -35,6 +43,18 @@ function Navbar() {
 							</li>
 						</div>
 					)}
+					{userRole && userRole !== "none" && (
+						<>
+							<li>
+								<button onClick={handleLogout} className="logout-btn">
+									Logout
+								</button>
+							</li>
+							<li>
+								<h1>|</h1>
+							</li>
+						</>
+					)}
 					<li>
 						<a href="/adminLogin">Admin Login</a>
 					</li>
@@ -47,7 +67,7 @@ function Navbar() {
 				</ul>
 			</div>
 			<div className="navbar-right">
-				<a href="/user/:username">Account</a>
+				{username && <a href={`/user/${username}`}>Account</a>}
 			</div>
 		</nav>
 	);

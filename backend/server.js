@@ -66,9 +66,13 @@ app.post("/api/user/me", (req, res) => {
 	if (!userType) {
 		return res.status(401).json({ message: "No User Type" });
 	}
+	const username = req.cookies.username;
+	if (!username) {
+		return res.status(401).json({ message: "No Username" });
+	}
 
 	// Return whatever info you want, e.g., name
-	return res.status(200).json({ user_type: userType });
+	return res.status(200).json({ user_type: userType, username: username });
 });
 
 app.post("/api/user/pickup", async (req, res) => {
@@ -128,7 +132,16 @@ app.post("/api/login", async (req, res) => {
 			result.rows[0].is_restaurant
 		);
 
+		//usertype cookie
 		res.cookie("user_type", userType, {
+			httpOnly: true,
+			sameSite: "lax",
+			secure: false,
+			path: "/",
+		});
+
+		//username cookie
+		res.cookie("username", username, {
 			httpOnly: true,
 			sameSite: "lax",
 			secure: false,
@@ -139,6 +152,7 @@ app.post("/api/login", async (req, res) => {
 			message: "Login successful",
 			user: result.rows[0],
 			user_type: userType,
+			username: username,
 		});
 	} catch (err) {
 		console.error(err);
@@ -838,3 +852,22 @@ app.get("/api/buyplates/price", async (req, res) => {
 app.listen(process.env.PORT, () =>
 	console.log(`Server running on port ${process.env.PORT}`)
 );
+
+// LOGOUT USER
+app.post("/api/logout", (req, res) => {
+    res.clearCookie("user_type", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: false,
+        path: "/",
+    });
+
+	res.clearCookie("username", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: false,
+        path: "/",
+    });
+
+    return res.json({ message: "Logged out successfully" });
+});
