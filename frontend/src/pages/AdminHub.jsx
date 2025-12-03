@@ -35,9 +35,9 @@ export const AdminHub = () => {
 	}, []);
 
 	return (
-		<div className="flex pt-16">
+		<div className="flex pt-16 bgnoe">
 			<aside
-				className="w-64 bg-gray-100 flex flex-col border p-4"
+				className="w-64 bg-emerald-100 flex flex-col border p-4"
 				style={{ minHeight: "calc(100vh - 64px)" }}
 			>
 				<div className="">
