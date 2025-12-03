@@ -10,7 +10,7 @@ export default function Login() {
 	const [error, setError] = useState(null);
 	const navigate = useNavigate(); //go to register page or after logging-in
 
-	const { setUserRole } = useContext(AuthContext);
+	const { setUserRole, setUser } = useContext(AuthContext);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -35,6 +35,7 @@ export default function Login() {
 				console.log("Login successful:", data.user);
 				setError(null);
 				setUserRole(data.user_type);
+				setUser(data.user.username); // set user
 				navigate(`/user/${data.user.username}`); //redirect to userpage
 			} catch (err) {
 				setError("Login failed. Please try again.");

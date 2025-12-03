@@ -4,7 +4,7 @@ export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
 	const [userRole, setUserRole] = useState(null);
-	const [username, setUsername] = useState(null);
+	const [username, setUser] = useState(null);
 
 
 	// Check cookie once when site loads
@@ -18,18 +18,18 @@ export function AuthProvider({ children }) {
 
 				if (!res.ok) {
 					setUserRole("none");
-					setUsername(null);
+					setUser(null);
 					return;
 				}
 
 				const data = await res.json();
 				console.log("API user data:", data); // DEBUG
 				setUserRole(data.user_type);
-				setUsername(data.username); // Store username from response
+				setUser(data.username); // Store username from response
 				console.log("Username set to:", data.username); // DEBUG
 			} catch {
 				setUserRole("none");
-				setUsername(null);
+				setUser(null);
 			}
 		};
 
@@ -49,11 +49,11 @@ export function AuthProvider({ children }) {
 
 		// Clear local auth state
 		setUserRole("none");
-		setUsername(null);
+		setUser(null);
 	};
 
 	return (
-		<AuthContext.Provider value={{ userRole, setUserRole, username, setUsername, logout }}>
+		<AuthContext.Provider value={{ userRole, setUserRole, username, setUser, logout }}>
 			{children}
 		</AuthContext.Provider>
 	);
