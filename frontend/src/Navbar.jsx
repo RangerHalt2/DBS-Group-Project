@@ -55,12 +55,16 @@ function Navbar() {
 							</li>
 						</>
 					)}
-					<li>
-						<a href="/adminLogin">Admin Login</a>
-					</li>
-					<li>
-						<h1>|</h1>
-					</li>
+					{(!userRole || userRole === "none") && (
+						<>
+							<li>
+								<a href="/adminLogin">Admin Login</a>
+							</li>
+							<li>
+								<h1>|</h1>
+							</li>
+						</>
+					)}
 					<li>
 						<a href="/plates">Available Plates</a>
 					</li>

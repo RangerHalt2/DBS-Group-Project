@@ -74,7 +74,7 @@ export default function Login() {
 				</button>
 
 				<button
-					type="submit"
+					type="button"
 					className="sign-up-button"
 					onClick={() => navigate("/register")}
 				>
